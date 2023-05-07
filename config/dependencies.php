@@ -10,6 +10,7 @@ use Salle\PuzzleMania\Controller\SignInController;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
 use Salle\PuzzleMania\Repository\MySQLUserRepository;
 use Salle\PuzzleMania\Repository\PDOConnectionBuilder;
+use Salle\PuzzleMania\Middleware\AuthorizationMiddleware;
 use Slim\Flash\Messages;
 use Slim\Views\Twig;
 
@@ -39,6 +40,10 @@ function addDependencies(ContainerInterface $container): void
             return new Messages();
         }
     );
+
+    $container->set(AuthorizationMiddleware::class, function (ContainerInterface $container) {
+        return new AuthorizationMiddleware($container->get('flash'));
+    });
 
     $container->set('user_repository', function (ContainerInterface $container) {
         return new MySQLUserRepository($container->get('db'));
