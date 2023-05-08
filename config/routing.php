@@ -31,6 +31,8 @@ function addRoutes(App $app, Container $container): void
         $group->get('/game', GameController::class . ':showGame')->setName('game');
     })->add(AuthorizationMiddleware::class);
 
+    $app->post('/profile', ProfileController::class . ':profileAction')->setName('profileAction');
+
     //TODO: Falten posts
     //TODO: Falten les rutes amb ID
 }
