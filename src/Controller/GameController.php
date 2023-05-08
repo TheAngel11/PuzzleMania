@@ -1,12 +1,12 @@
 <?php
 
-namespace Salle\PuzzleMania\Controller\API;
+namespace Salle\PuzzleMania\Controller;
 
 use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class RiddlesAPIController
+class GameController
 {
     private Twig $twig;
 
@@ -14,8 +14,8 @@ class RiddlesAPIController
         $this->twig = $twig;
     }
 
-    public function showRiddles(Request $request, Response $response): Response {
-        return $this->twig->render($response, 'riddles.twig');
+    public function showGame(Request $request, Response $response): Response {
+        return $this->twig->render($response, 'game.twig');
 
     }
 

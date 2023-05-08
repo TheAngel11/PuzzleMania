@@ -7,8 +7,28 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %}{% endblock %}</title>
     {% block head %}
+        {% block styles %}
+        <link rel="stylesheet" href="{{ full_url_for('showHome') }}assets/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{{ full_url_for('showHome') }}assets/css/styles.css"/>
+        {% endblock %}
     {% endblock %}
   </head>
+
+  <header>
+      {% block header %}
+          <nav class="navbar navbar-expand navbar-dark bg-dark">
+              <a class="navbar-brand mr-5 pr-5 font-italic" href="">PuzzleMania</a>
+              <a class="navbar-brand mr-5 ml-5" href="{{ full_url_for('showHome') }}">Home</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('signIn') }}">Sign In</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('signUp') }}">Sign Up</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('profile') }}">Profile</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('join') }}">Join Team</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('game') }}">Game</a>
+              <a class="navbar-brand mr-5" href="{{ full_url_for('riddles') }}">Riddles</a>
+          </nav>
+      {% endblock %}
+  </header>
+
   <body>
     {% block content %}{% endblock %}
   </body>
