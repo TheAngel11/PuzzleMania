@@ -5,6 +5,10 @@ declare(strict_types=1);
 use Psr\Container\ContainerInterface;
 use Salle\PuzzleMania\Controller\API\RiddlesAPIController;
 use Salle\PuzzleMania\Controller\API\UsersAPIController;
+use Salle\PuzzleMania\Controller\GameController;
+use Salle\PuzzleMania\Controller\ProfileController;
+use Salle\PuzzleMania\Controller\JoinController;
+use Salle\PuzzleMania\Controller\TeamStatsController;
 use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\SignInController;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
@@ -60,6 +64,48 @@ function addDependencies(ContainerInterface $container): void
         SignUpController::class,
         function (ContainerInterface $c) {
             return new SignUpController($c->get('view'), $c->get('user_repository'));
+        }
+    );
+
+    $container->set(
+        RiddlesAPIController::class,
+        function (ContainerInterface $c) {
+            return new RiddlesAPIController($c->get('view'));
+        }
+    );
+
+    $container->set(
+        UsersAPIController::class,
+        function (ContainerInterface $c) {
+            return new UsersAPIController($c->get('view'));
+        }
+    );
+
+    $container->set(
+        GameController::class,
+        function (ContainerInterface $c) {
+            return new GameController($c->get('view'));
+        }
+    );
+
+    $container->set(
+        ProfileController::class,
+        function (ContainerInterface $c) {
+            return new ProfileController($c->get('view'));
+        }
+    );
+
+    $container->set(
+        JoinController::class,
+        function (ContainerInterface $c) {
+            return new JoinController($c->get('view'));
+        }
+    );
+
+    $container->set(
+        TeamStatsController::class,
+        function (ContainerInterface $c) {
+            return new TeamStatsController($c->get('view'), $c->get("flash"));
         }
     );
 }
