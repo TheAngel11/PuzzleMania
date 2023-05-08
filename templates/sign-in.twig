@@ -5,7 +5,7 @@
 {% block content %}
     {% if notifs is not empty %}
         {% for notif in notifs %}
-            <p data-cy="sign-in__message">{{ notif }}</p>
+            <p data-cy="sign-in__message" class="flash-message">{{ notif }}</p>
         {% endfor %}
     {% endif %}
     <div class="text-center">
