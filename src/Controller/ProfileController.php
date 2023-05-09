@@ -65,6 +65,14 @@ class ProfileController
             ]);
         }
 
+        // There are no errors
+        $filename = $_FILES['file']['name'];
+        $fileExtension = explode('.', $filename)[1];
+        $uuid = uniqid();
+        $targetFile = __DIR__ . '/../../public/uploads/' . $uuid . '.' . $fileExtension;
+        // Saving img in the server
+        move_uploaded_file($_FILES['file']['tmp_name'], $targetFile);
+
 
         return $response->withHeader('Location', '/profile')->withStatus(302);
 

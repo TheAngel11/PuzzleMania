@@ -115,4 +115,38 @@ final class MySQLUserRepository implements UserRepository
         }
         return $users;
     }
+
+    public function setUuidByID(int $id, string $uuid): void
+    {
+        $query = <<<'QUERY'
+        UPDATE users SET uuid = :uuid WHERE id = :id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('uuid', $uuid, PDO::PARAM_STR);
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+
+        $statement->execute();
+    }
+
+    public function getUuidByID(int $id): string
+    {
+        $query = <<<'QUERY'
+        SELECT uuid FROM users WHERE id = :id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $count = $statement->rowCount();
+        if ($count > 0) {
+            $row = $statement->fetch(PDO::FETCH_OBJ);
+            return $row->uuid;
+        }
+        return 'null';
+    }
 }

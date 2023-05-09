@@ -26,7 +26,7 @@ class HttpErrorHandler
         $fileDimensions = getimagesize($_FILES['file']['tmp_name']);    // [0] = width, [1] = height
 
         // Check file size
-        if ($fileSize > 1000000) {
+        if ($fileSize >= 1000000) {
             $formErrors['fileSize'] = 'The size of the image must be less than 1MB.';
         }
 
