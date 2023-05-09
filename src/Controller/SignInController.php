@@ -70,6 +70,7 @@ class SignInController
                 $errors['password'] = 'Your email and/or password are incorrect.';
             } else {
                 $_SESSION['user_id'] = $user->id;
+                $_SESSION['user_email'] = $user->email;     // Also saving the email
                 return $response->withHeader('Location', '/')->withStatus(302);
             }
         }
