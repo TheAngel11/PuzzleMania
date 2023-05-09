@@ -130,7 +130,7 @@ final class MySQLUserRepository implements UserRepository
         $statement->execute();
     }
 
-    public function getUuidByID(int $id): string
+    public function getUuidByID(int $id): ?string
     {
         $query = <<<'QUERY'
         SELECT uuid FROM users WHERE id = :id
@@ -145,8 +145,9 @@ final class MySQLUserRepository implements UserRepository
         $count = $statement->rowCount();
         if ($count > 0) {
             $row = $statement->fetch(PDO::FETCH_OBJ);
+
             return $row->uuid;
         }
-        return 'null';
+        return null;
     }
 }

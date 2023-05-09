@@ -4,9 +4,9 @@
 
 {% block content %}
     <div class="text-center">
-        <h1 class="mt-5 pt-5" data-cy="profile">{{ username }}'s Profile</h1>
+        <h1 class="mt-5" data-cy="profile">{{ username }}'s Profile</h1>
         {% if formData.picture %}
-            <img src="{{ formData.picture }}" alt="profilePic" class="mt-3" width="400" height="400">
+            <img src="{{ full_url_for('showHome') }}uploads/{{ formData.picture }}" alt="profilePic" class="mt-3" width="400" height="400">
         {% else %}
             <img src="{{ full_url_for('showHome') }}uploads/placeholder_pic.png" alt="profilePic" class="mt-3" width="400" height="400">
         {% endif %}

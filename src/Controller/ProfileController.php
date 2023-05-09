@@ -28,6 +28,7 @@ class ProfileController
         if (isset($_SESSION['user_email'])) {
             $username = substr($_SESSION['user_email'], 0, strpos($_SESSION['user_email'], '@'));
             $formData['email'] = $_SESSION['user_email'];
+            $formData['picture'] = $this->userRepository->getUuidByID($_SESSION['user_id']);
         }
 
         return $this->twig->render($response, 'profile.twig', [
@@ -47,37 +48,37 @@ class ProfileController
         $errorHandler = new HttpErrorHandler(array());
         $formErrors = $errorHandler->validateProfile();
 
-        if(!empty($formErrors)) {
-            $username = '';
-            $formData = [];
-            $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor('profile');
-            if (isset($_SESSION['user_email'])) {
-                $username = substr($_SESSION['user_email'], 0, strpos($_SESSION['user_email'], '@'));
-                $formData['email'] = $_SESSION['user_email'];
-            }
+        if(empty($formErrors)) {
+            // There are no errors
+            $filename = $_FILES['file']['name'];
+            $fileExtension = explode('.', $filename)[1];
+            $uuid = uniqid() . '.' . $fileExtension;;
+            $targetFile = __DIR__ . '/../../public/uploads/' . $uuid;
 
+            // Saving img in the server
+            move_uploaded_file($_FILES['file']['tmp_name'], $targetFile);
 
-            return $this->twig->render($response, 'profile.twig', [
-                'username' => $username,
-                'formAction' => $formAction,
-                'formData' => $formData,
-                'formErrors' => $formErrors
-            ]);
+            // Saving uuid in the database
+            $this->userRepository->setUuidByID($_SESSION['user_id'], $uuid);
         }
 
-        // There are no errors
-        $filename = $_FILES['file']['name'];
-        $fileExtension = explode('.', $filename)[1];
-        $uuid = uniqid();
-        $targetFile = __DIR__ . '/../../public/uploads/' . $uuid . '.' . $fileExtension;
-        // Saving img in the server
-        move_uploaded_file($_FILES['file']['tmp_name'], $targetFile);
+        $username = '';
+        $formData = [];
+        $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor('profile');
+        if (isset($_SESSION['user_email'])) {
+            $username = substr($_SESSION['user_email'], 0, strpos($_SESSION['user_email'], '@'));
+            $formData['email'] = $_SESSION['user_email'];
+            $formData['picture'] = $this->userRepository->getUuidByID($_SESSION['user_id']);
+        }
 
 
-        return $response->withHeader('Location', '/profile')->withStatus(302);
+        return $this->twig->render($response, 'profile.twig', [
+            'username' => $username,
+            'formAction' => $formAction,
+            'formData' => $formData,
+            'formErrors' => $formErrors
 
-
-
+        ]);
     }
 
 }
