@@ -18,6 +18,7 @@ CREATE TABLE `users`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `riddles`;
 CREATE TABLE `riddles`
 (
     `riddle_id`   INT          NOT NULL AUTO_INCREMENT,
@@ -25,5 +26,24 @@ CREATE TABLE `riddles`
     `riddle`      VARCHAR(255) NOT NULL,
     `answer`    VARCHAR(255) NOT NULL,
     PRIMARY KEY (`riddle_id`),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `teams`;
+CREATE TABLE `teams`
+(
+    `team_id`   INT          NOT NULL AUTO_INCREMENT,
+    `team_name`      VARCHAR(255) NOT NULL,
+    `team_score`    INT          NOT NULL,
+    PRIMARY KEY (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `team_members`;
+CREATE TABLE `team_members`
+(
+    `team_id`   INT          NOT NULL,
+    `user_id`   INT          NOT NULL,
+    PRIMARY KEY (`team_id`, `user_id`),
+    FOREIGN KEY (team_id) REFERENCES teams (team_id),
     FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

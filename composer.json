@@ -24,5 +24,11 @@
     "ext-json": "*",
     "slim/flash": "^0.4.0",
     "twbs/bootstrap": "^5.2"
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "rm -rf public/bootstrap",
+      "cp -R vendor/twbs/bootstrap/dist public/bootstrap"
+    ]
   }
 }

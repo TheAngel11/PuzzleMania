@@ -15,8 +15,10 @@ class JoinController
     }
 
     public function showJoin(Request $request, Response $response): Response {
-        return $this->twig->render($response, 'join.twig');
+        // TODO: check if user is in a team already
+        $userId = $_SESSION['user_id'];
 
+        return $this->twig->render($response, 'join.twig');
     }
 
 }
