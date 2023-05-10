@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Psr\Container\ContainerInterface;
 use Salle\PuzzleMania\Controller\API\RiddlesAPIController;
 use Salle\PuzzleMania\Controller\API\UsersAPIController;
-use Salle\PuzzleMania\Controller\GameController;
+use Salle\PuzzleMania\Controller\GameIntroController;
 use Salle\PuzzleMania\Controller\ProfileController;
 use Salle\PuzzleMania\Controller\JoinController;
 use Salle\PuzzleMania\Controller\TeamStatsController;
 use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\SignInController;
+use Salle\PuzzleMania\GameRiddlesController;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
 use Salle\PuzzleMania\Repository\MySQLUserRepository;
 use Salle\PuzzleMania\Repository\PDOConnectionBuilder;
@@ -82,9 +83,9 @@ function addDependencies(ContainerInterface $container): void
     );
 
     $container->set(
-        GameController::class,
+        GameIntroController::class,
         function (ContainerInterface $c) {
-            return new GameController($c->get('view'));
+            return new GameIntroController($c->get('view'));
         }
     );
 
@@ -106,6 +107,13 @@ function addDependencies(ContainerInterface $container): void
         TeamStatsController::class,
         function (ContainerInterface $c) {
             return new TeamStatsController($c->get('view'), $c->get("flash"));
+        }
+    );
+
+    $container->set(
+        GameRiddlesController::class,
+        function (ContainerInterface $c) {
+            return new GameRiddlesController($c->get('view'), $c->get("flash"));
         }
     );
 }
