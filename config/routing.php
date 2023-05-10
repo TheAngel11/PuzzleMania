@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 use DI\Container;
 use Salle\PuzzleMania\Controller\API\RiddlesAPIController;
-use Salle\PuzzleMania\Controller\API\UsersAPIController;
 use Salle\PuzzleMania\Controller\GameIntroController;
+use Salle\PuzzleMania\Controller\GameRiddlesController;
 use Salle\PuzzleMania\Controller\JoinController;
 use Salle\PuzzleMania\Controller\ProfileController;
-use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\SignInController;
+use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\TeamStatsController;
-use Salle\PuzzleMania\GameRiddlesController;
 use Salle\PuzzleMania\Middleware\AuthorizationMiddleware;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
