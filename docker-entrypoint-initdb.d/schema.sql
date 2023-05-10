@@ -59,3 +59,5 @@ CREATE TABLE `riddle_answers`
     PRIMARY KEY (`riddle_id`),
     FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

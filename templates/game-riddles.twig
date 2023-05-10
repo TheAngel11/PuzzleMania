@@ -3,5 +3,24 @@
 {% block title %}Game Riddles | PuzzleMania{% endblock %}
 
 {% block content %}
-<h1>Hello {{ username }}!</h1>
+<div class="text-center">
+    <h1 class="mt-5 pt-5 mb-5">Riddle {{ riddleId }}</h1>
+    <p class="lead">{{ riddle }}</p>
+    <form action="{{ formActionSubmit }}" method="POST" class="form-signin">
+        <input type="text" name="riddle" placeholder="Enter your answer" id="inputRiddle" class="form-control mb-2">
+        <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block mt-2 mb-2">
+    </form>
+
+    {% if formAction %}
+        {% if correct %}
+            <p class="valid-feedback mb-3 h3" style="display: block">Correct!</p>
+        {% else %}
+            <p class="invalid-feedback mb-0 h3" style="display: block">Incorrect! The correct answer is:</p>
+            <p class="valid-feedback mb-3 h3" style="display: block">{{ answer }}</p>
+        {% endif %}
+
+            <a href="{{ formAction }}" class="btn btn-lg btn-primary btn-block mt-2">Next</a>
+    {% endif %}
+
+
 {% endblock %}

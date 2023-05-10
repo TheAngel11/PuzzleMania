@@ -10,11 +10,10 @@ use Psr\Http\Message\ResponseInterface as Response;
 class GameIntroController
 {
     private Twig $twig;
-    private int $gameId;
+    private int $gameId = 0;
 
     public function __construct(Twig $twig) {
         $this->twig = $twig;
-        $this->gameId = 0;
     }
 
     public function showGame(Request $request, Response $response): Response {
