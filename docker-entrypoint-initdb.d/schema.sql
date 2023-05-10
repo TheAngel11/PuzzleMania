@@ -1,6 +1,5 @@
 SET NAMES utf8;
-SET
-time_zone = '+00:00';
+SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
@@ -22,9 +21,9 @@ CREATE TABLE `users`
 DROP TABLE IF EXISTS `riddles`;
 CREATE TABLE `riddles`
 (
-    `riddle_id`   INT          NOT NULL AUTO_INCREMENT,
-    `user_id`    INT          NOT NULL,
-    `riddle`      VARCHAR(255) NOT NULL,
+    `riddle_id` INT          NOT NULL AUTO_INCREMENT,
+    `user_id`   INT          NOT NULL,
+    `riddle`    VARCHAR(255) NOT NULL,
     `answer`    VARCHAR(255) NOT NULL,
     PRIMARY KEY (`riddle_id`),
     FOREIGN KEY (user_id) REFERENCES users (id)
@@ -33,8 +32,8 @@ CREATE TABLE `riddles`
 DROP TABLE IF EXISTS `teams`;
 CREATE TABLE `teams`
 (
-    `team_id`   INT          NOT NULL AUTO_INCREMENT,
-    `team_name`      VARCHAR(255) NOT NULL,
+    `team_id`       INT          NOT NULL AUTO_INCREMENT,
+    `team_name`     VARCHAR(255) NOT NULL,
     `team_score`    INT          NOT NULL,
     PRIMARY KEY (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -54,8 +53,37 @@ CREATE TABLE `riddle_answers`
 (
     `riddle_id` INT NOT NULL AUTO_INCREMENT,
     `user_id`   INT NOT NULL,
-    `question` VARCHAR(255) NOT NULL,
+    `question`  VARCHAR(255) NOT NULL,
     `answer`    VARCHAR(255) NOT NULL,
     PRIMARY KEY (`riddle_id`),
     FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Now that all tables are created, let's populate the database with test entries
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'It brings back the lost as though never gone, shines laughter and tears with light
+long since shone; a moment to make, a lifetime to shed; valued then but lost when your dead.
+What Is It?', 'Memory');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'What do you get when you cross a fish with an elephant?', 'Swimming trunks');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'I can be long, or I can be short. I can be grown, and I can be bought. I can be
+painted, or left bare. I can be round, or I can be square. What am I?', 'Fingernails');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'I am lighter than a feather yet no man can hold me for long.', 'Breath');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'What occurs once in every minute, twice in every moment and yet never in a
+thousand years?', 'The letter M');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'What nationality is Santa Claus?', 'North Polish');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'What animal is best at hitting a baseball?', 'A bat');
+
+INSERT INTO riddles(user_id, riddle, answer)
+VALUES (1, 'What do you call a cow that twitches?', 'Beef Jerky');
