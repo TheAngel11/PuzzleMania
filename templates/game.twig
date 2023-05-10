@@ -3,5 +3,42 @@
 {% block title %}Game | PuzzleMania{% endblock %}
 
 {% block content %}
-<h1>Hello {{ username }}!</h1>
+    <div class="jumbotron mt-5">
+        <div class="container">
+            <h1 class="display-3" data-cy="home__welcomeMsg">Group: {{ groupName }}</h1>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md">
+                <h2>Instructions</h2>
+                <p class="text-justify">This game is simple, each player will try to guess 3 different riddles that. The riddles
+                    will appear one by one, if the answer is correct or not, you will know after submitting the answer.</p>
+            </div>
+            <div class="col-md-4 ms-5">
+                <h2>Point System</h2>
+                <p class="text-justify">All the players start with 10 points, each player will earn 10 points for every correct answer,
+                    and lose 10 points for a wrong answer. The game ends when the three riddles have been answered,
+                    or if the player loses by having 0 points.</p>
+            </div>
+
+            <div class="col-md-4 ms-5">
+                <h2>Results</h2>
+                <p class="text-justify">
+                    After finishing the game, the total amount of points earned individually will be added, and will form
+                    the team points of that game. The team stats of that game will be shown.</p>
+            </div>
+        </div>
+
+        <hr>
+
+    </div>
+
+    <form action="{{ formAction }}" method="POST">
+        <div class="d-grid gap-2 col-6 mx-auto mt-5">
+            <input type="submit" value="Start Game" class="btn btn-primary">
+        </div>
+    </form>
 {% endblock %}

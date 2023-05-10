@@ -14,7 +14,7 @@
         <form action="{{ formAction }}" method="POST" class="form-signin" enctype="multipart/form-data">
             <input disabled type="text" name="email" value="{{ formData.email }}" class="form-control mb-2">
             <input type="file" name="file" class="form-control">
-            <input type="submit" value="Update" class="btn btn-lg btn-primary btn-block">
+            <input type="submit" value="Update" class="btn btn-lg btn-primary btn-block mt-2">
         </form>
         {% if formErrors.fileSize %}
             <p class="invalid-feedback mb-2 pb-4 h3" style="display: block">{{ formErrors.fileSize }}</p>
