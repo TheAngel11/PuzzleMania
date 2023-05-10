@@ -66,7 +66,27 @@ final class MySQLTeamRepository implements TeamRepository
 
     public function getTeamByUserId(int $id)
     {
-        // TODO: Implement getTeamByUserId() method.
+        $query = <<<'QUERY'
+        SELECT t.* FROM teams t
+        INNER JOIN team_members tm ON t.team_id = tm.team_id
+        WHERE tm.user_id = :id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $team = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$team) return null;
+
+        return new Team(
+            intval($team['team_id']),
+            $team['team_name'],
+            intval($team['team_score'])
+        );
     }
 
     public function getIncompleteTeams(): ?array

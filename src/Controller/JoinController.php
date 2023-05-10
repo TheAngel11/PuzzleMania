@@ -29,12 +29,10 @@ class JoinController
         if (isset($_SESSION['user_id'])) {
             if (isset($data['teamId'])) {
                 $this->teamRepository->addMemberToTeam($data['teamId'], $_SESSION['user_id']);
-                echo "Added user to team";
                 return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
             } else if (isset($data['teamName'])) {
                 $newTeamId = $this->teamRepository->createTeam(new Team(0, $data['teamName'], 0));
                 $this->teamRepository->addMemberToTeam($newTeamId, $_SESSION['user_id']);
-                echo "Created team and added user to team";
                 return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
             }
         }
