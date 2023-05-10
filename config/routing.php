@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use DI\Container;
 use Salle\PuzzleMania\Controller\API\RiddlesAPIController;
-use Salle\PuzzleMania\Controller\API\UsersAPIController;
-use Salle\PuzzleMania\Controller\GameController;
+use Salle\PuzzleMania\Controller\GameIntroController;
+use Salle\PuzzleMania\Controller\GameRiddlesController;
 use Salle\PuzzleMania\Controller\JoinController;
 use Salle\PuzzleMania\Controller\ProfileController;
-use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\SignInController;
+use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\TeamStatsController;
 use Salle\PuzzleMania\Middleware\AuthorizationMiddleware;
 use Slim\App;
@@ -29,10 +29,15 @@ function addRoutes(App $app, Container $container): void
         $group->post('/join', JoinController::class . ':handlePost');
         $group->get('/team-stats', TeamStatsController::class . ':showTeamStats')->setName('teamStats');
         $group->get('/riddles', RiddlesAPIController::class . ':showRiddles')->setName('riddles');
-        $group->get('/game', GameController::class . ':showGame')->setName('game');
+        $group->get('/game', GameIntroController::class . ':showGame')->setName('game');
     })->add(AuthorizationMiddleware::class);
 
     $app->post('/profile', ProfileController::class . ':profileAction')->setName('profileAction');
+    $app->post('/game', GameIntroController::class . ':gameAction')->setName('gameAction');
+
+    // make a route /game/{gameId}/riddle/{riddleId}:
+    $app->get('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':showRiddle')->setName('showRiddle');
+
 
     //TODO: Falten posts
     //TODO: Falten les rutes amb ID

@@ -48,3 +48,14 @@ CREATE TABLE `team_members`
     FOREIGN KEY (team_id) REFERENCES teams (team_id),
     FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `riddle_answers`;
+CREATE TABLE `riddle_answers`
+(
+    `riddle_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id`   INT NOT NULL,
+    `question` VARCHAR(255) NOT NULL,
+    `answer`    VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`riddle_id`),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
