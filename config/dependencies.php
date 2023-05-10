@@ -12,6 +12,7 @@ use Salle\PuzzleMania\Controller\TeamStatsController;
 use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\SignInController;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
+use Salle\PuzzleMania\Repository\MySQLTeamRepository;
 use Salle\PuzzleMania\Repository\MySQLUserRepository;
 use Salle\PuzzleMania\Repository\PDOConnectionBuilder;
 use Salle\PuzzleMania\Middleware\AuthorizationMiddleware;
@@ -51,6 +52,10 @@ function addDependencies(ContainerInterface $container): void
 
     $container->set('user_repository', function (ContainerInterface $container) {
         return new MySQLUserRepository($container->get('db'));
+    });
+
+    $container->set('team_repository', function (ContainerInterface $container) {
+        return new MySQLTeamRepository($container->get('db'));
     });
 
     $container->set(
@@ -98,7 +103,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         JoinController::class,
         function (ContainerInterface $c) {
-            return new JoinController($c->get('view'));
+            return new JoinController($c->get('view'), $c->get('team_repository'), $c->get("flash"));
         }
     );
 

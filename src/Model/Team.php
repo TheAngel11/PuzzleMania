@@ -5,9 +5,12 @@ namespace Salle\PuzzleMania\Model;
 
 class Team
 {
-    private int $id;
-    private string $name;
-    private int $points;
+
+    public function __construct(
+        private int $id,
+        private string $name,
+        private int $points
+    ) {}
 
     /**
      * @return int

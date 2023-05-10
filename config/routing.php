@@ -26,7 +26,8 @@ function addRoutes(App $app, Container $container): void
     $app->group('', function (RouteCollectorProxy  $group) {
         $group->get('/profile', ProfileController::class . ':showProfile')->setName('profile');
         $group->get('/join', JoinController::class . ':showJoin')->setName('join');
-        $group->get('/team-stats', TeamStatsController::class . ':showJoin')->setName('teamStats');
+        $group->post('/join', JoinController::class . ':handlePost');
+        $group->get('/team-stats', TeamStatsController::class . ':showTeamStats')->setName('teamStats');
         $group->get('/riddles', RiddlesAPIController::class . ':showRiddles')->setName('riddles');
         $group->get('/game', GameController::class . ':showGame')->setName('game');
     })->add(AuthorizationMiddleware::class);
