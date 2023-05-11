@@ -56,11 +56,14 @@ class JoinController
             $incompleteTeams = $this->teamRepository->getIncompleteTeams();
         }
 
+        $notifications = $messages['notifications'] ?? [];
+
         return $this->twig->render($response,
             'join.twig',
             [
                 'formAction' => $routeParser->urlFor("join"),
                 'incompleteTeams' => $incompleteTeams,
+                'notifs' => $notifications,
             ]);
     }
 

@@ -3,12 +3,32 @@
 {% block title %}Team Stats | PuzzleMania{% endblock %}
 
 {% block content %}
+{% if notifs is not empty %}
+    {% for notif in notifs %}
+        <p data-cy="team-stats__message" class="flash-message">{{ notif }}</p>
+    {% endfor %}
+{% endif %}
 <h1>Hello {{ username }}!</h1>
 <p>Here are your team stats:</p>
 <p>Team Name: {{ team.name }}</p>
+    <p>Number of members: {{ teamMembers|length }}</p>
     <p>Team Points: {{ team.points }}</p>
     {% for member in teamMembers %}
-        <p>Member: {{ member.username }}</p>
+        {% set username = member.email|split('@') %}
+        <p>Member: {{ username|first }}</p>
     {% endfor %}
-    <input type="button" value="Invite">
+    {% if hasQR %}
+        <input id="showQrId" type="button" value="Show QR">
+        <img id="imgId" hidden="hidden" src="{{ full_url_for('showHome') }}assets/qr/{{ team.id }}.png" alt="qrCode" class="mt-3" >
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    {{ parent() }}
+    <script>
+        document.getElementById("showQrId").onclick = function() {
+            document.getElementById("showQrId").hidden = true;
+            document.getElementById("imgId").hidden = false;
+        };
+    </script>
 {% endblock %}
