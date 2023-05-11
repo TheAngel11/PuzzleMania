@@ -11,12 +11,14 @@ use Psr\Http\Message\ResponseInterface as Response;
 class GameIntroController
 {
     private Twig $twig;
-    private int $gameId = 0;
+    private int $gameId;
     private MySQLTeamRepository $teamRepository;
 
     public function __construct(Twig $twig, MySQLTeamRepository $teamRepository) {
         $this->twig = $twig;
         $this->teamRepository = $teamRepository;
+        $this->gameId = 0;
+        echo "A";
     }
 
     public function showGame(Request $request, Response $response): Response {
@@ -38,7 +40,7 @@ class GameIntroController
 
     public function gameAction(Request $request, Response $response): Response {
         $this->gameId++;
-
+        echo "B";
         return $response->withHeader('Location', "/game/$this->gameId/riddle/1")->withStatus(302);
     }
 }
