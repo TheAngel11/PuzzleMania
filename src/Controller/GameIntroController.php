@@ -2,6 +2,7 @@
 
 namespace Salle\PuzzleMania\Controller;
 
+use Salle\PuzzleMania\Repository\MySQLTeamRepository;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -11,19 +12,26 @@ class GameIntroController
 {
     private Twig $twig;
     private int $gameId = 0;
+    private MySQLTeamRepository $teamRepository;
 
-    public function __construct(Twig $twig) {
+    public function __construct(Twig $twig, MySQLTeamRepository $teamRepository) {
         $this->twig = $twig;
+        $this->teamRepository = $teamRepository;
     }
 
     public function showGame(Request $request, Response $response): Response {
-        // TODO: Check if the user has joined a team
+        // Check if the user has a team
+        $team = $this->teamRepository->getTeamByUserId($_SESSION['user_id']);
+
+        if ($team == null) {
+            return $response->withHeader('Location', '/join')->withStatus(302);
+        }
 
         $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor('game');
 
 
         return $this->twig->render($response, 'game-intro.twig', [
-            'groupName' => "HARDCODED",
+            'groupName' => $team->getName(),
             'formAction' => $formAction
         ]);
     }

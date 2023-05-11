@@ -89,7 +89,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         GameIntroController::class,
         function (ContainerInterface $c) {
-            return new GameIntroController($c->get('view'));
+            return new GameIntroController($c->get('view'), $c->get('team_repository'));
         }
     );
 
