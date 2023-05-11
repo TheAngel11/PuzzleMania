@@ -110,7 +110,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         TeamStatsController::class,
         function (ContainerInterface $c) {
-            return new TeamStatsController($c->get('view'), $c->get("flash"));
+            return new TeamStatsController($c->get('view'), $c->get('team_repository'), $c->get('user_repository'), $c->get("flash"));
         }
     );
 

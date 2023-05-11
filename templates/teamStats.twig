@@ -4,4 +4,11 @@
 
 {% block content %}
 <h1>Hello {{ username }}!</h1>
+<p>Here are your team stats:</p>
+<p>Team Name: {{ team.name }}</p>
+    <p>Team Points: {{ team.points }}</p>
+    {% for member in teamMembers %}
+        <p>Member: {{ member.username }}</p>
+    {% endfor %}
+    <input type="button" value="Invite">
 {% endblock %}
