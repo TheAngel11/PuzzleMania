@@ -6,13 +6,15 @@ namespace Salle\PuzzleMania\Repository;
 
 use Salle\PuzzleMania\Model\Team;
 
-interface TeamsRepository
+interface TeamRepository
 {
-    public function createTeam(Team $team): void;
+    public function createTeam(Team $team): int;
 
     public function getTeamById(int $id);
 
-    public function getMembersByTeamId(int $id);
+    public function getTeamByUserId(int $id);
 
     public function getIncompleteTeams();
+
+    public function addMemberToTeam(int $teamId, int $userId): void;
 }

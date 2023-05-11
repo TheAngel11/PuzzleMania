@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Salle\PuzzleMania\Repository;
 
 use PDO;
+use Salle\PuzzleMania\Model\Team;
 use Salle\PuzzleMania\Model\User;
 
-final class MySQLTeamRepository implements UserRepository
+final class MySQLTeamRepository implements TeamRepository
 {
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
@@ -18,59 +19,32 @@ final class MySQLTeamRepository implements UserRepository
         $this->databaseConnection = $database;
     }
 
-    public function createTeam(Team $team): void
+    public function createTeam(Team $team): int
     {
         $query = <<<'QUERY'
-        INSERT INTO users(email, password, coins, createdAt, updatedAt)
-        VALUES(:email, :password, :coins, :createdAt, :updatedAt)
-        QUERY;
-
-        $queryWithoutCoins = <<<'QUERY'
-        INSERT INTO users(email, password, createdAt, updatedAt)
-        VALUES(:email, :password, :createdAt, :updatedAt)
-        QUERY;
-
-        $email = $user->email();
-        $password = $user->password();
-        $createdAt = $user->createdAt()->format(self::DATE_FORMAT);
-        $updatedAt = $user->updatedAt()->format(self::DATE_FORMAT);
-
-        if (empty($coins)) $query = $queryWithoutCoins;
-
-        $statement = $this->databaseConnection->prepare($query);
-
-        $statement->bindParam('email', $email, PDO::PARAM_STR);
-        $statement->bindParam('password', $password, PDO::PARAM_STR);
-        $statement->bindParam('createdAt', $createdAt, PDO::PARAM_STR);
-        $statement->bindParam('updatedAt', $updatedAt, PDO::PARAM_STR);
-
-        $statement->execute();
-    }
-
-    public function getUserByEmail(string $email)
-    {
-        $query = <<<'QUERY'
-        SELECT * FROM users WHERE email = :email
+        INSERT INTO teams(team_name, team_score)
+        VALUES(:name, :points)
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
 
-        $statement->bindParam('email', $email, PDO::PARAM_STR);
+        $name = $team->getName();
+        $points = $team->getPoints();
+
+        $statement->bindParam('name', $name, PDO::PARAM_STR);
+        $statement->bindParam('points', $points, PDO::PARAM_STR);
 
         $statement->execute();
 
-        $count = $statement->rowCount();
-        if ($count > 0) {
-            $row = $statement->fetch(PDO::FETCH_OBJ);
-            return $row;
-        }
-        return null;
+        $id = $this->databaseConnection->lastInsertId();
+
+        return intval($id);
     }
 
-    public function getUserById(int $id)
+    public function getTeamById(int $id): ?Team
     {
         $query = <<<'QUERY'
-        SELECT * FROM users WHERE id = :id
+        SELECT * FROM teams WHERE id = :id
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
@@ -79,40 +53,83 @@ final class MySQLTeamRepository implements UserRepository
 
         $statement->execute();
 
-        $count = $statement->rowCount();
-        if ($count > 0) {
-            $row = $statement->fetch(PDO::FETCH_OBJ);
-            return $row;
-        }
-        return null;
+        $team = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$team) return null;
+
+        return new Team(
+            intval($team['team_id']),
+            $team['team_name'],
+            intval($team['team_score'])
+        );
     }
 
-    public function getAllUsers()
+    public function getTeamByUserId(int $id)
     {
         $query = <<<'QUERY'
-        SELECT * FROM users
+        SELECT t.* FROM teams t
+        INNER JOIN team_members tm ON t.team_id = tm.team_id
+        WHERE tm.user_id = :id
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
 
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+
         $statement->execute();
 
-        $users = [];
+        $team = $statement->fetch(PDO::FETCH_ASSOC);
 
-        $count = $statement->rowCount();
-        if ($count > 0) {
-            $rows = $statement->fetchAll();
+        if (!$team) return null;
 
-            for ($i = 0; $i < $count; $i++) {
-                $user = User::create()
-                    ->setId(intval($rows[$i]['id']))
-                    ->setEmail($rows[$i]['email'])
-                    //->setPassword($rows[$i]['password']) - don't ever expose pswd!!!!
-                    ->setCreatedAt(date_create_from_format('Y-m-d H:i:s', $rows[$i]['createdAt']))
-                    ->setUpdatedAt(date_create_from_format('Y-m-d H:i:s', $rows[$i]['updatedAt']));
-                $users[] = $user;
-            }
-        }
-        return $users;
+        return new Team(
+            intval($team['team_id']),
+            $team['team_name'],
+            intval($team['team_score'])
+        );
     }
+
+    public function getIncompleteTeams(): ?array
+    {
+        $query = <<<'QUERY'
+        SELECT t.* FROM teams t
+        LEFT JOIN team_members tm ON t.team_id = tm.team_id
+        GROUP BY t.team_id
+        HAVING COUNT(tm.user_id) <= 1
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->execute();
+
+        $teams = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$teams) return null;
+
+        $result = [];
+        foreach ($teams as $team) {
+            $result[] = new Team(
+                intval($team['team_id']),
+                $team['team_name'],
+                intval($team['team_score'])
+            );
+        }
+
+        return $result;
+    }
+
+    public function addMemberToTeam(int $teamId, int $userId): void
+    {
+        $query = <<<'QUERY'
+        INSERT INTO team_members(team_id, user_id)
+        VALUES(:team_id, :user_id)
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('team_id', $teamId, PDO::PARAM_INT);
+        $statement->bindParam('user_id', $userId, PDO::PARAM_INT);
+
+        $statement->execute();
+    }
+
 }
