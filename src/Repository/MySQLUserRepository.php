@@ -150,4 +150,8 @@ final class MySQLUserRepository implements UserRepository
         }
         return null;
     }
+
+    public function getMembersByTeamId(int $id)
+    {
+    }
 }
