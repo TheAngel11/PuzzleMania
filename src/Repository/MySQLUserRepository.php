@@ -18,7 +18,7 @@ final class MySQLUserRepository implements UserRepository
         $this->databaseConnection = $database;
     }
 
-    public function createUser(User $user): void
+    public function createUser(User $user): int
     {
         $query = <<<'QUERY'
         INSERT INTO users(email, password, coins, createdAt, updatedAt)
@@ -45,6 +45,11 @@ final class MySQLUserRepository implements UserRepository
         $statement->bindParam('updatedAt', $updatedAt, PDO::PARAM_STR);
 
         $statement->execute();
+
+        // Get last inserted id
+        $id = $this->databaseConnection->lastInsertId();
+
+        return intval($id);
     }
 
     public function getUserByEmail(string $email)

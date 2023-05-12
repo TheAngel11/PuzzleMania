@@ -8,6 +8,7 @@ use Salle\PuzzleMania\Controller\API\UsersAPIController;
 use Salle\PuzzleMania\Controller\GameIntroController;
 use Salle\PuzzleMania\Controller\GameRiddlesController;
 use Salle\PuzzleMania\Controller\JoinController;
+use Salle\PuzzleMania\Controller\InviteController;
 use Salle\PuzzleMania\Controller\ProfileController;
 use Salle\PuzzleMania\Controller\SignInController;
 use Salle\PuzzleMania\Controller\SignUpController;
@@ -68,7 +69,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         SignUpController::class,
         function (ContainerInterface $c) {
-            return new SignUpController($c->get('view'), $c->get('user_repository'));
+            return new SignUpController($c->get('view'), $c->get('user_repository'), $c->get('team_repository'));
         }
     );
 
@@ -111,6 +112,13 @@ function addDependencies(ContainerInterface $container): void
         TeamStatsController::class,
         function (ContainerInterface $c) {
             return new TeamStatsController($c->get('view'), $c->get('team_repository'), $c->get('user_repository'), $c->get("flash"));
+        }
+    );
+
+    $container->set(
+        InviteController::class,
+        function (ContainerInterface $c) {
+            return new InviteController($c->get('team_repository'));
         }
     );
 
