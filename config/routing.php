@@ -37,8 +37,8 @@ function addRoutes(App $app, Container $container): void
     $app->post('/profile', ProfileController::class . ':profileAction')->setName('profileAction');
     $app->post('/game', GameIntroController::class . ':gameAction')->setName('gameAction');
 
-    // make a route /game/{gameId}/riddle/{riddleId}:
     $app->get('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':showRiddle')->setName('showRiddle');
+    $app->post('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':riddleAction')->setName('riddleAction');
 
 
     //TODO: Falten posts

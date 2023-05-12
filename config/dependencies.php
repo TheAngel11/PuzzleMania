@@ -13,6 +13,8 @@ use Salle\PuzzleMania\Controller\SignInController;
 use Salle\PuzzleMania\Controller\SignUpController;
 use Salle\PuzzleMania\Controller\TeamStatsController;
 use Salle\PuzzleMania\Middleware\AuthorizationMiddleware;
+use Salle\PuzzleMania\Repository\MySQLGameRepository;
+use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
 use Salle\PuzzleMania\Repository\MySQLTeamRepository;
 use Salle\PuzzleMania\Repository\MySQLUserRepository;
 use Salle\PuzzleMania\Repository\PDOConnectionBuilder;
@@ -58,6 +60,14 @@ function addDependencies(ContainerInterface $container): void
         return new MySQLTeamRepository($container->get('db'));
     });
 
+    $container->set('riddle_repository', function (ContainerInterface $container) {
+        return new MySQLRiddleRepository($container->get('db'));
+    });
+
+    $container->set('game_repository', function (ContainerInterface $container) {
+        return new MySQLGameRepository($container->get('db'));
+    });
+
     $container->set(
         SignInController::class,
         function (ContainerInterface $c) {
@@ -89,7 +99,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         GameIntroController::class,
         function (ContainerInterface $c) {
-            return new GameIntroController($c->get('view'));
+            return new GameIntroController($c->get('view'), $c->get('team_repository'), $c->get('game_repository'), $c->get('riddle_repository'));
         }
     );
 
@@ -117,7 +127,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         GameRiddlesController::class,
         function (ContainerInterface $c) {
-            return new GameRiddlesController($c->get('view'), $c->get("flash"));
+            return new GameRiddlesController($c->get('view'), $c->get('game_repository'), $c->get('riddle_repository'));
         }
     );
 }

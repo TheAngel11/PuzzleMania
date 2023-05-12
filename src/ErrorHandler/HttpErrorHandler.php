@@ -22,11 +22,13 @@ class HttpErrorHandler
 
         $filename = $_FILES['file']['name'];
         $fileSize = $_FILES['file']['size'];
-        $fileExtension = explode('.', $filename)[1];
+        $mime_type = mime_content_type($_FILES['file']['tmp_name']);
+
+        $fileExtension = substr($mime_type, strpos($mime_type, '/') + 1);
         $fileDimensions = getimagesize($_FILES['file']['tmp_name']);    // [0] = width, [1] = height
 
         // Check file size
-        if ($fileSize >= 1000000) {
+        if ($fileSize >= 1048576) {
             $formErrors['fileSize'] = 'The size of the image must be less than 1MB.';
         }
 

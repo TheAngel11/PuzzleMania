@@ -51,7 +51,9 @@ class ProfileController
         if(empty($formErrors)) {
             // There are no errors
             $filename = $_FILES['file']['name'];
-            $fileExtension = explode('.', $filename)[1];
+            $mime_type = mime_content_type($_FILES['file']['tmp_name']);
+
+            $fileExtension = substr($mime_type, strpos($mime_type, '/') + 1);
             $uuid = uniqid() . '.' . $fileExtension;;
             $targetFile = __DIR__ . '/../../public/uploads/' . $uuid;
 
