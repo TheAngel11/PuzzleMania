@@ -64,7 +64,7 @@ final class MySQLTeamRepository implements TeamRepository
         );
     }
 
-    public function getTeamByUserId(int $id)
+    public function getTeamByUserId(int $id): ?Team
     {
         $query = <<<'QUERY'
         SELECT t.* FROM teams t
