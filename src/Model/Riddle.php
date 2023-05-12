@@ -23,4 +23,24 @@ class Riddle implements JsonSerializable{
     {
         return get_object_vars($this);
     }
+
+    public function getQuestion(): string
+    {
+        return $this->question;
+    }
+
+    public function getAnswer(): string
+    {
+        return $this->answer;
+    }
+
+    public function setQuestion(string $question): void
+    {
+        $this->question = $question;
+    }
+
+    public function setAnswer(string $answer): void
+    {
+        $this->answer = $answer;
+    }
 }

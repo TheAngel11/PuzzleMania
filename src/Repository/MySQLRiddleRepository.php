@@ -41,9 +41,9 @@ class MySQLRiddleRepository implements RiddleRepository
             $riddles = array();
             while ($row = $statement->fetch()) {
                 $riddle = Riddle::create();
-                $riddle->setQuestion($row['question']);
+                $riddle->setQuestion($row['riddle']);
                 $riddle->setAnswer($row['answer']);
-                array_push($riddles, $riddle);
+                $riddles[] = $riddle;
             }
             return $riddles;
         }
@@ -52,25 +52,20 @@ class MySQLRiddleRepository implements RiddleRepository
     public function getRandomRiddles(): array
     {
         $riddles = $this->getAllRiddles();
-        $randomRiddles = array();
 
-        // Return 3 random riddles form the array of riddles
-        for ($i = 0; $i < NUM_OF_RIDDLES; $i++) {
-            $randomRiddle = $riddles[array_rand($riddles)];
-            array_push($randomRiddles, $randomRiddle);
-        }
-        return $randomRiddles;
+        shuffle($riddles);
+        return array_slice($riddles, 0, NUM_OF_RIDDLES);
     }
 
-    public function getAnswerByQuestion(string $question): string
+    public function getAnswerByQuestion(string $riddle): string
     {
         // Prepare the query
         $query = <<<'QUERY'
-        SELECT answer FROM riddles WHERE question = :question
+        SELECT answer FROM riddles WHERE riddle = :riddle
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
-        $statement->bindParam('question', $question, PDO::PARAM_STR);
+        $statement->bindParam('riddle', $riddle, PDO::PARAM_STR);
         $statement->execute();
 
         $count = $statement->rowCount();
