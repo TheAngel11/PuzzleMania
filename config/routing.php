@@ -28,6 +28,8 @@ function addRoutes(App $app, Container $container): void
         $group->get('/join', JoinController::class . ':showJoin')->setName('join');
         $group->post('/join', JoinController::class . ':handlePost');
         $group->get('/team-stats', TeamStatsController::class . ':showTeamStats')->setName('teamStats');
+        $group->post('/team-stats', TeamStatsController::class . ':generateQR')->setName('generateQR');
+        $group->get('/invite/join/:id', JoinController::class . ':inviteJoin')->setName('invite');
         $group->get('/riddles', RiddlesAPIController::class . ':showRiddles')->setName('riddles');
         $group->get('/game', GameIntroController::class . ':showGame')->setName('game');
     })->add(AuthorizationMiddleware::class);

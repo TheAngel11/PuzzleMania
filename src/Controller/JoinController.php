@@ -67,4 +67,10 @@ class JoinController
             ]);
     }
 
+    public function inviteJoin(Request $request, Response $response): Response {
+        $routeParser = RouteContext::fromRequest($request)->getRouteParser();
+
+        return $response->withHeader('Location', $routeParser->urlFor('signUp'))->withStatus(302);
+    }
+
 }

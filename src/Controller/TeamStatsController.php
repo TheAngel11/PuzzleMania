@@ -33,33 +33,12 @@ class TeamStatsController
         if (isset($_SESSION['user_id'])) {
             $team = $this->teamRepository->getTeamByUserId($_SESSION['user_id']);
             if ($team) {
-                $teamMembers = $this->userRepository->getMembersByTeamId($team->getId());
+                $_SESSION['team'] = $team;
 
-                $teamId = $team->getId();
+                $teamMembers = $this->userRepository->getMembersByTeamId($team->getId());
 
                 if (sizeof($teamMembers) < 2) {
                     $hasQR = true;
-
-                    $data = array(
-                        'symbology' => 'QRCode',
-                        'code' => 'http://localhost:8030/invite/join/' . $team->getId(),
-                        'width' => 512,
-                        'height' => 512,
-                    );
-
-                    $options = array(
-                        'http' => array(
-                            'method' => 'POST',
-                            'content' => json_encode($data),
-                            'header' => "Content-Type: application/json\r\n" .
-                                "Accept: image/png\r\n"
-                        )
-                    );
-
-                    $context = stream_context_create($options);
-                    $url = 'http://pw_barcode/BarcodeGenerator';
-                    $tmpResponse = file_get_contents($url, false, $context);
-                    file_put_contents("assets/qr/$teamId.png", $tmpResponse);
                 }
             } else {
                 $this->flash->addMessage("notifications", "You are not in a team.");
@@ -75,9 +54,47 @@ class TeamStatsController
                 'team' => $team,
                 'teamMembers' => $teamMembers,
                 'hasQR' => $hasQR,
+                'qrURL' => $routeParser->urlFor('generateQR'),
                 'notifs' => $notifications,
             ]);
 
+    }
+
+    public function generateQR(Request $request, Response $response): Response {
+        $teamMembers = null;
+
+        if (isset($_SESSION['team'])) {
+            $teamId = $_SESSION['team']->getId();
+            $teamMembers = $this->userRepository->getMembersByTeamId($teamId);
+
+            $qrData = array(
+                'symbology' => 'QRCode',
+                'code' => 'http://localhost:8030/invite/join/' . $teamId,
+            );
+
+            $options = array(
+                'http' => array(
+                    'method' => 'POST',
+                    'content' => json_encode($qrData),
+                    'header' => "Content-Type: application/json\r\n" .
+                        "Accept: image/png\r\n"
+                )
+            );
+
+            $context = stream_context_create($options);
+            $url = 'http://pw_barcode/BarcodeGenerator';
+            $qrResponse = file_get_contents($url, false, $context);
+            file_put_contents("assets/qr/$teamId.png", $qrResponse);
+        }
+
+        return $this->twig->render($response,
+            'teamStats.twig',
+            [
+                'team' => $_SESSION['team'],
+                'teamMembers' => $teamMembers,
+                'isQRSet' => true,
+                'hasQR' => true,
+            ]);
     }
 
 }
