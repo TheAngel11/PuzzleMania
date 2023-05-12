@@ -17,22 +17,74 @@ use Slim\Routing\RouteCollectorProxy;
 
 function addRoutes(App $app, Container $container): void
 {
-    $app->get('/', SignInController::class . ':showHome')->setName('showHome');
-    $app->get('/sign-in', SignInController::class . ':showSignInForm')->setName('signIn');
-    $app->post('/sign-in', SignInController::class . ':signIn');
-    $app->get('/sign-up', SignUpController::class . ':showSignUpForm')->setName('signUp');
-    $app->post('/sign-up', SignUpController::class . ':signUp');
+    /*GET*/
+    $app->get(
+        '/',
+        SignInController::class . ':showHome'
+    )->setName('showHome');
 
+    $app->get(
+        '/sign-in',
+        SignInController::class . ':showSignInForm'
+    )->setName('signIn');
+
+    $app->get(
+        '/sign-up',
+        SignUpController::class . ':showSignUpForm'
+    )->setName('signUp');
+
+    /*POST*/
+    $app->post(
+        '/sign-in',
+        SignInController::class . ':signIn');
+
+    $app->post(
+        '/sign-up',
+        SignUpController::class . ':signUp');
+
+    $app->post(
+        '/profile',
+        ProfileController::class . ':profileAction'
+    )->setName('profileAction');
+
+    $app->post(
+        '/game',
+        GameIntroController::class . ':gameAction'
+    )->setName('gameAction');
+
+    /*GROUP*/
     $app->group('', function (RouteCollectorProxy  $group) {
-        $group->get('/profile', ProfileController::class . ':showProfile')->setName('profile');
-        $group->get('/join', JoinController::class . ':showJoin')->setName('join');
-        $group->get('/team-stats', TeamStatsController::class . ':showJoin')->setName('teamStats');
-        $group->get('/riddles', RiddlesAPIController::class . ':showRiddles')->setName('riddles');
-        $group->get('/game', GameIntroController::class . ':showGame')->setName('game');
+        $group->get(
+            '/profile',
+            ProfileController::class . ':showProfile'
+        )->setName('profile');
+
+        $group->get(
+            '/join',
+            JoinController::class . ':showJoin'
+        )->setName('join');
+
+        $group->get(
+            '/team-stats',
+            TeamStatsController::class . ':showJoin'
+        )->setName('teamStats');
+
+        $group->get(
+            '/riddles',
+            RiddlesAPIController::class . ':showRiddles'
+        )->setName('riddles');
+
+        $group->get(
+            '/game',
+            GameIntroController::class . ':showGame'
+        )->setName('game');
+
     })->add(AuthorizationMiddleware::class);
 
-    $app->post('/profile', ProfileController::class . ':profileAction')->setName('profileAction');
-    $app->post('/game', GameIntroController::class . ':gameAction')->setName('gameAction');
+
+    /* RIDDLE API ROUTES */
+
+
 
     // make a route /game/{gameId}/riddle/{riddleId}:
     $app->get('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':showRiddle')->setName('showRiddle');
