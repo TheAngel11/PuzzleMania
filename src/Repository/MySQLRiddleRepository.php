@@ -61,4 +61,24 @@ class MySQLRiddleRepository implements RiddleRepository
         }
         return $randomRiddles;
     }
+
+    public function getAnswerByQuestion(string $question): string
+    {
+        // Prepare the query
+        $query = <<<'QUERY'
+        SELECT answer FROM riddles WHERE question = :question
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('question', $question, PDO::PARAM_STR);
+        $statement->execute();
+
+        $count = $statement->rowCount();
+        // If there are no riddles, return an empty array
+        if ($count <= 0) return "";
+        else {
+            $row = $statement->fetch();
+            return $row['answer'];
+        }
+    }
 }

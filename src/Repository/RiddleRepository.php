@@ -13,5 +13,7 @@ interface RiddleRepository
     public function getAllRiddles(): array;
 
     public function getRandomRiddles(): array;
+
+    public function getAnswerByQuestion(string $question): string;
 }
 
