@@ -13,4 +13,6 @@ interface UserRepository
     public function getUserById(int $id);
     public function getAllUsers();
     public function getMembersByTeamId(int $id);
+    public function setUuidByID(int $id, string $uuid);
+    public function getUuidByID(int $id);
 }
