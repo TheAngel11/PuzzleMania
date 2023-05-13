@@ -141,13 +141,33 @@ class MySQLRiddleRepository implements RiddleRepository
 
     public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool
     {
-        // TODO: Implement modifyRiddleEntry() method.
-        return true;
+        // Prepare the query
+        // Take the corresponding riddle and update it
+        $query = <<<'QUERY'
+        UPDATE riddles 
+        SET riddle = :question, answer = :answer WHERE riddle_id = :id
+        QUERY;
+        // Bind all the parameters specified in the query
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('question', $question, PDO::PARAM_STR);
+        $statement->bindParam('answer', $answer, PDO::PARAM_STR);
+        $statement->bindParam('id', $riddleId, PDO::PARAM_INT);
+        $statement->execute();
+        // If the riddle has been updated successfully return true, otherwise return false
+        return $statement->rowCount() > 0;
     }
 
     public function deleteRiddleEntry(int $riddleId): bool
     {
-        // TODO: Implement deleteRiddleEntry() method.
-        return true;
+        //Prepare the query
+        $query = <<<'QUERY'
+        DELETE FROM riddles WHERE riddle_id = :id
+        QUERY;
+        // Bind all the parameters specified in the query
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('id', $riddleId, PDO::PARAM_INT);
+        $statement->execute();
+        // If the riddle has been deleted successfully return true, otherwise return false
+        return $statement->rowCount() > 0;
     }
 }
