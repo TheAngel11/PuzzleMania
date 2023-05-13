@@ -10,22 +10,23 @@
         </div>
     </div>
 
-    {% if riddles|length > 0 %}
-        <div class="jumbotron mt-3" id="riddles-list">
-            <ul style="list-style: none; padding: 0;">
-                {% for index, riddle in riddles %}
-                    <li style="margin-bottom: 10px;">
-                        <div class="container">
-                            <strong>{{ index+1 }}. {{ riddle.question }}</strong>
-                            <br>{{ riddle.answer }}
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
+    {% if array_riddles is not empty %}
+        <div class="container mt-5" id="riddles-list">
+            {% for index, riddle in array_riddles %}
+                <div class="card border-grey mb-3" style="border-radius: 10px; border-color: grey;">
+                    <div class="card-body">
+                        <strong>{{ riddle.question }}</strong><br>
+                        {{ riddle.answer }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
-        <div class="jumbotron mt-3" id="riddles-empty">
-            <p>There are no riddles yet.</p>
+        <div class="container mt-5" id="riddles-empty">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">ERROR: Sorry, no riddles found.</h4>
+                <p>Please try again later.</p>
+            </div>
         </div>
     {% endif %}
 

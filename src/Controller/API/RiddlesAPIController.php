@@ -38,7 +38,7 @@ class RiddlesAPIController
                 $response,
                 'riddles.twig',
                 [
-                    'riddles' => $riddles
+                    'array_riddles' => $riddles
                 ]
             );
         }
