@@ -17,7 +17,7 @@ class MySQLRiddleRepository implements RiddleRepository
         $this->databaseConnection = $database;
     }
 
-    public function createRiddle(Riddle $riddle): void
+    public function createRiddle(Riddle $riddle): Riddle
     {
         // Prepare the query
         $query = <<<'QUERY'
@@ -34,6 +34,13 @@ class MySQLRiddleRepository implements RiddleRepository
         $statement->bindParam('answer', $answer, PDO::PARAM_STR);
 
         $statement->execute();
+
+        // Prepare the new riddle to return
+        $id = $this->databaseConnection->lastInsertId();
+        $riddle->setId($id);
+        $riddle->setUserId($_SESSION['user_id']);
+
+        return $riddle;
     }
 
     public function getAllRiddles(): array

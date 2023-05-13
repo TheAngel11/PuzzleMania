@@ -2,6 +2,7 @@
 
 namespace Salle\PuzzleMania\Controller\API;
 
+use Salle\PuzzleMania\Model\Riddle;
 use Salle\PuzzleMania\Repository\RiddleRepository;
 use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -65,33 +66,75 @@ class RiddlesAPIController
             return $response->withHeader('content-type', 'application/json')->withStatus(200);
         } else {
             // If it does not, return an error
-            $responseBody = json_encode(['error' => 'Riddle not found']);
+            $responseBody = <<<body
+            {"message": "Riddle with id $entryId does not exist"}
+            body;
             $response->getBody()->write($responseBody);
             return $response->withHeader('content-type', 'application/json')->withStatus(404);
         }
     }
 
     public function postRiddleEntry(Request $request, Response $response): Response {
-        $data = $request->getParsedBody();
-        // Check if the request has all the required fields
-        if (isset($data['riddle']) && isset($data['answer']) && isset($data['userId'])) {
-            $riddle = $data['riddle'];
-            // Create the riddle in the database
-
-            return $response->withHeader('content-type', 'application/json')->withStatus(201);
-        } else {
+        $parsedBody = $request->getParsedBody();
+        // Check if the user session exists
+        if (!isset($_SESSION['user_id'])) {
             // If it does not, return an error
-            $responseBody = json_encode(['error' => 'Missing fields']);
+            $responseBody = <<<body
+            {"message": "You must be logged in to create a riddle"}
+            body;
             $response->getBody()->write($responseBody);
             return $response->withHeader('content-type', 'application/json')->withStatus(400);
         }
+
+        // Check if the riddle and answer are set
+        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) &&
+            isset($parsedBody['user_id'])) {
+            // If the user session exists, create the riddle
+            $riddle = $parsedBody['riddle'];
+            $answer = $parsedBody['answer'];
+            // Create the riddle
+            $data = Riddle::create();
+            $data->setRiddle($riddle);
+            $data->setAnswer($answer);
+            $riddleEntry = $this->riddlesRepository->createRiddle($data);
+
+            $response->getBody()->write(json_encode($riddleEntry));
+            return $response->withHeader('content-type', 'application/json')->withStatus(201);
+        }
+
+        // If the riddle and answer are not set, return an error
+        $responseBody = <<<body
+        {"message": "'riddle' and/or 'answer' and/or 'userId' key missing"}
+        body;
+        $response->getBody()->write($responseBody);
+        return $response->withHeader('content-type', 'application/json')->withStatus(400);
     }
 
+    public function putRiddleEntry(Request $request, Response $response, array $args): Response {
+        $parsedBody = $request->getParsedBody();
+        $entryId = intval($args['id'] ?? 0);
+        // Check if the user session exists
+        if (!isset($_SESSION['user_id'])) {
+            // If it does not, return an error
+            $responseBody = <<<body
+            {"message": "You must be logged in to edit a riddle"}
+            body;
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(400);
+        }
 
+        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) && !$entryId <= 0) {
 
+        }
 
-
-
+        //TODO: Still in progress
+        //If something is not in the PUT, return error
+        $responseBody = <<<body
+        {"message": "'title' and/or 'content' key missing"}
+        body;
+        $response->getBody()->write($responseBody);
+        return $response->withHeader('content-type', 'application/json')->withStatus(400);
+    }
 
 
 }
