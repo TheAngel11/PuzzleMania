@@ -56,6 +56,8 @@ class MySQLRiddleRepository implements RiddleRepository
                 $riddle = Riddle::create();
                 $riddle->setQuestion($row['riddle']);
                 $riddle->setAnswer($row['answer']);
+                $riddle->setId(intval($row['riddle_id']));
+                $riddle->setUserId(intval($row['user_id']));
                 $riddles[] = $riddle;
             }
             return $riddles;
@@ -68,6 +70,29 @@ class MySQLRiddleRepository implements RiddleRepository
 
         shuffle($riddles);
         return array_slice($riddles, 0, NUM_OF_RIDDLES);
+    }
+
+    public function getRiddleById(int $riddleId): ?Riddle
+    {
+        // Prepare the query
+        $query = <<<'QUERY'
+        SELECT * FROM riddles WHERE riddle_id = :id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('id', $riddleId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $count = $statement->rowCount();
+        // If there are no riddles, return an empty array
+        if ($count <= 0) return null;
+        else {
+            $row = $statement->fetch();
+            $riddle = Riddle::create();
+            $riddle->setQuestion($row['riddle']);
+            $riddle->setAnswer($row['answer']);
+            return $riddle;
+        }
     }
 
     public function getAnswerByQuestion(string $riddle): string

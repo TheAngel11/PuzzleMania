@@ -44,13 +44,38 @@ class RiddlesAPIController
         }
     }
 
-    /********************************* RIDDLES API METHODS ***********************************/
+    /********************************* RIDDLE API METHODS ***********************************/
     public function getRiddleEntries(Request $request, Response $response): Response {
         $entries = $this->riddlesRepository->getAllRiddles();
         $responseBody = json_encode($entries);
         $response->getBody()->write($responseBody);
         return $response->withHeader('content-type', 'application/json')->withStatus(200);
     }
+
+    public function getRiddleEntry(Request $request, Response $response, array $args): Response {
+        // Get riddle id from the request
+        $entryId = intval($args['id']);
+        // Get the riddle from the database
+        $entry = $this->riddlesRepository->getRiddleById($entryId);
+        // Check if the riddle exists
+        if ($entry) {
+            // If it does, return the riddle
+            $responseBody = json_encode($entry);
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(200);
+        } else {
+            // If it does not, return an error
+            $responseBody = json_encode(['error' => 'Riddle not found']);
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(404);
+        }
+    }
+
+
+
+
+
+
 
 
 
