@@ -71,7 +71,21 @@ class RiddlesAPIController
         }
     }
 
+    public function postRiddleEntry(Request $request, Response $response): Response {
+        $data = $request->getParsedBody();
+        // Check if the request has all the required fields
+        if (isset($data['riddle']) && isset($data['answer']) && isset($data['userId'])) {
+            $riddle = $data['riddle'];
+            // Create the riddle in the database
 
+            return $response->withHeader('content-type', 'application/json')->withStatus(201);
+        } else {
+            // If it does not, return an error
+            $responseBody = json_encode(['error' => 'Missing fields']);
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(400);
+        }
+    }
 
 
 

@@ -27,7 +27,7 @@ class MySQLRiddleRepository implements RiddleRepository
 
         $statement = $this->databaseConnection->prepare($query);
         // Prepare the binding of the parameters
-        $question = $riddle->getQuestion();
+        $question = $riddle->getRiddle();
         $answer = $riddle->getAnswer();
         // Bind the parameters
         $statement->bindParam('riddle', $question, PDO::PARAM_STR);
@@ -54,7 +54,7 @@ class MySQLRiddleRepository implements RiddleRepository
             $riddles = array();
             while ($row = $statement->fetch()) {
                 $riddle = Riddle::create();
-                $riddle->setQuestion($row['riddle']);
+                $riddle->setRiddle($row['riddle']);
                 $riddle->setAnswer($row['answer']);
                 $riddle->setId(intval($row['riddle_id']));
                 $riddle->setUserId(intval($row['user_id']));
@@ -89,7 +89,7 @@ class MySQLRiddleRepository implements RiddleRepository
         else {
             $row = $statement->fetch();
             $riddle = Riddle::create();
-            $riddle->setQuestion($row['riddle']);
+            $riddle->setRiddle($row['riddle']);
             $riddle->setAnswer($row['answer']);
             return $riddle;
         }
@@ -113,6 +113,23 @@ class MySQLRiddleRepository implements RiddleRepository
             $row = $statement->fetch();
             return $row['answer'];
         }
+    }
+
+    public function riddleExists(Riddle $riddle): bool
+    {
+        // Prepare the query
+        $query = <<<'QUERY'
+        SELECT * FROM riddles WHERE riddle = :riddle AND answer = :answer
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('riddle', $riddle, PDO::PARAM_STR);
+        $statement->execute();
+        $count = $statement->rowCount();
+        // If there are no riddles, return false
+        if ($count <= 0) return false;
+        // If there are riddles, return true
+        else return true;
     }
 
     public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool

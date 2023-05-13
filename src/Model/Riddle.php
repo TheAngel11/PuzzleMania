@@ -9,10 +9,8 @@ use JsonSerializable;
 class Riddle implements JsonSerializable{
 
     private int $id;
-
     private int $userId;
-
-    private string $question;
+    private string $riddle;
     private string $answer;
 
     public static function create(): Riddle
@@ -35,9 +33,9 @@ class Riddle implements JsonSerializable{
         return $this->userId;
     }
 
-    public function getQuestion(): string
+    public function getRiddle(): string
     {
-        return $this->question;
+        return $this->riddle;
     }
 
     public function getAnswer(): string
@@ -55,9 +53,9 @@ class Riddle implements JsonSerializable{
         $this->userId = $userId;
     }
 
-    public function setQuestion(string $question): void
+    public function setRiddle(string $riddle): void
     {
-        $this->question = $question;
+        $this->riddle = $riddle;
     }
 
     public function setAnswer(string $answer): void
