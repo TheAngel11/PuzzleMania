@@ -16,9 +16,6 @@ class Riddle implements JsonSerializable{
         return new self();
     }
 
-    /**
-     * Function called when encoded with json_encode
-     */
     public function jsonSerialize(): array
     {
         return get_object_vars($this);

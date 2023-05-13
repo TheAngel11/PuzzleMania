@@ -83,7 +83,26 @@ function addRoutes(App $app, Container $container): void
 
 
     /* RIDDLE API ROUTES */
-
+    $app->get(
+        '/api/riddle',
+        RiddlesAPIController::class . ':getAllRiddleEntries'
+    );
+    $app->get(
+        '/api/riddle/{id}',
+        RiddlesAPIController::class . ':getRiddleEntry'
+    );
+    $app->post(
+        '/api/riddle',
+        RiddlesAPIController::class . ':postRiddleEntry'
+    );
+    $app->put(
+        '/api/riddle/{id}',
+        RiddlesAPIController::class . ':putRiddleEntry'
+    );
+    $app->delete(
+        '/api/riddle/{id}',
+        RiddlesAPIController::class . ':deleteRiddleEntry'
+    );
 
 
     // make a route /game/{gameId}/riddle/{riddleId}:
