@@ -3,10 +3,36 @@
 {% block title %}Riddles | PuzzleMania{% endblock %}
 
 {% block content %}
-    <h1>Riddles:</h1>
-    <ul>
-        {% for riddle in riddles %}
-            <li>{{ riddle.question }} - {{ riddle.answer }}</li>
-        {% endfor %}
-    </ul>
+
+    <div class="jumbotron mt-5">
+        <div class="container">
+            <h1 class="display-3" data-cy="home__welcomeMsg">Riddles:</h1>
+        </div>
+    </div>
+
+    {% if riddles|length > 0 %}
+        <div class="jumbotron mt-3" id="riddles-list">
+            <ul style="list-style: none; padding: 0;">
+                {% for index, riddle in riddles %}
+                    <li style="margin-bottom: 10px;">
+                        <div class="container">
+                            <strong>{{ index+1 }}. {{ riddle.question }}</strong>
+                            <br>{{ riddle.answer }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="jumbotron mt-3" id="riddles-empty">
+            <p>There are no riddles yet.</p>
+        </div>
+    {% endif %}
+
+    <form action="{{ formAction }}" method="POST">
+        <div class="d-grid gap-2 col-6 mx-auto mt-5">
+            <input type="submit" value="Create Riddle" class="btn btn-primary">
+        </div>
+    </form>
+
 {% endblock %}

@@ -21,14 +21,27 @@ class RiddlesAPIController
     public function showRiddles(Request $request, Response $response): Response {
         // Get all the exiting riddles from the database
         $riddles = $this->riddlesRepository->getAllRiddles();
-        // Render the riddles page with the riddles
-        return $this->twig->render(
-            $response,
-            'riddles.twig',
-            [
-                'riddles' => $riddles
-            ]
-        );
+        // Check if the array is empty
+        if (empty($riddles)) {
+            // If it is, show a message saying that there are no riddles
+            return $this->twig->render(
+                $response,
+                'riddles.twig',
+                [
+                    'message' => 'There are no riddles yet'
+                ]
+            );
+        } else {
+            // If it is not, show the riddles
+            // Render the riddles page with the riddles
+            return $this->twig->render(
+                $response,
+                'riddles.twig',
+                [
+                    'riddles' => $riddles
+                ]
+            );
+        }
     }
 
     /********************************* RIDDLES API METHODS ***********************************/
