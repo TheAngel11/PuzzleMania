@@ -3,5 +3,10 @@
 {% block title %}Riddles | PuzzleMania{% endblock %}
 
 {% block content %}
-<h1>Hello {{ username }}!</h1>
+    <h1>Riddles:</h1>
+    <ul>
+        {% for riddle in riddles %}
+            <li>{{ riddle.question }} - {{ riddle.answer }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

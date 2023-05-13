@@ -17,10 +17,23 @@ class MySQLRiddleRepository implements RiddleRepository
         $this->databaseConnection = $database;
     }
 
-    public function createRiddle(Riddle $riddle): bool
+    public function createRiddle(Riddle $riddle): void
     {
-        // TODO: Implement createRiddle() method.
-        return true;
+        // Prepare the query
+        $query = <<<'QUERY'
+        INSERT INTO riddles(riddle, answer)
+        VALUES(:riddle, :answer)
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+        // Prepare the binding of the parameters
+        $question = $riddle->getQuestion();
+        $answer = $riddle->getAnswer();
+        // Bind the parameters
+        $statement->bindParam('riddle', $question, PDO::PARAM_STR);
+        $statement->bindParam('answer', $answer, PDO::PARAM_STR);
+
+        $statement->execute();
     }
 
     public function getAllRiddles(): array
@@ -75,5 +88,17 @@ class MySQLRiddleRepository implements RiddleRepository
             $row = $statement->fetch();
             return $row['answer'];
         }
+    }
+
+    public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool
+    {
+        // TODO: Implement modifyRiddleEntry() method.
+        return true;
+    }
+
+    public function deleteRiddleEntry(int $riddleId): bool
+    {
+        // TODO: Implement deleteRiddleEntry() method.
+        return true;
     }
 }

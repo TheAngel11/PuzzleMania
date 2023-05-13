@@ -19,17 +19,27 @@ class RiddlesAPIController
     }
 
     public function showRiddles(Request $request, Response $response): Response {
-        return $this->twig->render($response, 'riddles.twig');
-
+        // Get all the exiting riddles from the database
+        $riddles = $this->riddlesRepository->getAllRiddles();
+        // Render the riddles page with the riddles
+        return $this->twig->render(
+            $response,
+            'riddles.twig',
+            [
+                'riddles' => $riddles
+            ]
+        );
     }
 
     /********************************* RIDDLES API METHODS ***********************************/
-    public function getAllRiddleEntries(Request $request, Response $response): Response {
+    public function getRiddleEntries(Request $request, Response $response): Response {
         $entries = $this->riddlesRepository->getAllRiddles();
         $responseBody = json_encode($entries);
         $response->getBody()->write($responseBody);
         return $response->withHeader('content-type', 'application/json')->withStatus(200);
     }
+
+
 
 
 }
