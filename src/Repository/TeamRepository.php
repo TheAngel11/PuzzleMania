@@ -10,7 +10,7 @@ interface TeamRepository
 {
     public function createTeam(Team $team): int;
 
-    public function getTeamById(int $id);
+    public function getTeamById(int $id): ?Team;
 
     public function getTeamByUserId(int $id);
 

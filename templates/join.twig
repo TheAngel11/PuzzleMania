@@ -3,6 +3,11 @@
 {% block title %}Join | PuzzleMania{% endblock %}
 
 {% block content %}
+{% if notifs is not empty %}
+    {% for notif in notifs %}
+        <p data-cy="join__message" class="flash-message">{{ notif }}</p>
+    {% endfor %}
+{% endif %}
 <section class="row ms-auto me-auto">
     <h1 class="card-title">Create a new team</h1>
     <!-- Form for creating a team -->
