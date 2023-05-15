@@ -15,5 +15,5 @@ interface RiddleRepository
     public function getAnswerByQuestion(string $riddle): string;
     public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool;
     public function deleteRiddleEntry(int $riddleId): bool;
-    public function riddleExists(Riddle $riddle): bool;
+    public function checkIfRiddleExists(int $id): bool;
 }

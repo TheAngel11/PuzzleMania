@@ -76,24 +76,32 @@ class RiddlesAPIController
 
     public function postRiddleEntry(Request $request, Response $response): Response {
         $parsedBody = $request->getParsedBody();
-        // Check if the user session exists
-        if (!isset($_SESSION['user_id'])) {
-            // If it does not, return an error
-            $responseBody = <<<body
-            {"message": "You must be logged in to create a riddle"}
-            body;
-            $response->getBody()->write($responseBody);
-            return $response->withHeader('content-type', 'application/json')->withStatus(400);
-        }
+        // Get the riddle id from the body
+        $riddleId = intval($parsedBody['id']);
 
         // Check if the riddle and answer are set
         if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) &&
-            isset($parsedBody['user_id'])) {
+            isset($parsedBody['userId'])) {
             // If the user session exists, create the riddle
             $riddle = $parsedBody['riddle'];
             $answer = $parsedBody['answer'];
+
             // Create the riddle
             $data = Riddle::create();
+
+            // Check if the riddle id alredy exisits
+            if ($this->riddlesRepository->checkIfRiddleExists($riddleId)) {
+                // If it does, return an error
+                $responseBody = <<<body
+                {"message": "Riddle with id $riddleId already exists"}
+                body;
+                $response->getBody()->write($responseBody);
+                return $response->withHeader('content-type', 'application/json')->withStatus(400);
+            }
+
+            // If it does not, create the riddle entry
+            $data->setId($riddleId);
+            $data->setUserId($parsedBody['userId']);
             $data->setRiddle($riddle);
             $data->setAnswer($answer);
             $riddleEntry = $this->riddlesRepository->createRiddle($data);

@@ -33,12 +33,13 @@ class MySQLRiddleRepository implements RiddleRepository
         $statement->bindParam('riddle', $question, PDO::PARAM_STR);
         $statement->bindParam('answer', $answer, PDO::PARAM_STR);
 
+
         $statement->execute();
 
         // Prepare the new riddle to return
         $id = $this->databaseConnection->lastInsertId();
-        $riddle->setId($id);
-        $riddle->setUserId($_SESSION['user_id']);
+        //$riddle->setId($id);
+        //$riddle->setUserId($_SESSION['user_id']);
 
         return $riddle;
     }
@@ -122,23 +123,6 @@ class MySQLRiddleRepository implements RiddleRepository
         }
     }
 
-    public function riddleExists(Riddle $riddle): bool
-    {
-        // Prepare the query
-        $query = <<<'QUERY'
-        SELECT * FROM riddles WHERE riddle = :riddle AND answer = :answer
-        QUERY;
-
-        $statement = $this->databaseConnection->prepare($query);
-        $statement->bindParam('riddle', $riddle, PDO::PARAM_STR);
-        $statement->execute();
-        $count = $statement->rowCount();
-        // If there are no riddles, return false
-        if ($count <= 0) return false;
-        // If there are riddles, return true
-        else return true;
-    }
-
     public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool
     {
         // Prepare the query
@@ -169,5 +153,20 @@ class MySQLRiddleRepository implements RiddleRepository
         $statement->execute();
         // If the riddle has been deleted successfully return true, otherwise return false
         return $statement->rowCount() > 0;
+    }
+
+    public function checkIfRiddleExists(int $id): bool
+    {
+        //Prepare query
+        $query = <<<'QUERY'
+        SELECT * FROM riddles WHERE riddle_id = :id
+        QUERY;
+        // Bind all the parameters specified in the query
+        $statement = $this->databaseConnection->prepare($query);
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+        $statement->execute();
+        // If the riddle exists return true, otherwise return false
+        if ($statement->rowCount() > 0) return true;
+        else return false;
     }
 }
