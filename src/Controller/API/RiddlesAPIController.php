@@ -45,7 +45,11 @@ class RiddlesAPIController
         }
     }
 
+    /****************************************************************************************/
+    /****************************************************************************************/
     /********************************* RIDDLE API METHODS ***********************************/
+    /****************************************************************************************/
+    /****************************************************************************************/
     public function getRiddleEntries(Request $request, Response $response): Response {
         $entries = $this->riddlesRepository->getAllRiddles();
         $responseBody = json_encode($entries);
@@ -120,29 +124,77 @@ class RiddlesAPIController
 
     public function putRiddleEntry(Request $request, Response $response, array $args): Response {
         $parsedBody = $request->getParsedBody();
+        // Get the id of the riddle we want to modify.
         $entryId = intval($args['id'] ?? 0);
-        // Check if the user session exists
-        if (!isset($_SESSION['user_id'])) {
-            // If it does not, return an error
+        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) && !$entryId <= 0) {
+            // Check if the riddle we want to modify exists.
+            if($this->riddlesRepository->checkIfRiddleExists($entryId)) {
+                // The riddle we want to modify exists, so we modify it.
+                $riddle = $parsedBody['riddle'];
+                $answer = $parsedBody['answer'];
+
+                if($this->riddlesRepository->modifyRiddleEntry($entryId, $riddle, $answer)){
+                    // The riddle was modified successfully.
+                    $responseBody = <<<body
+                    {"message": "Riddle with id $entryId was modified successfully"}
+                    body;
+                    $response->getBody()->write($responseBody);
+                    return $response->withHeader('content-type', 'application/json')->withStatus(200);
+                }
+
+                // The riddle was not modified successfully.
+                $responseBody = <<<body
+                {"message": "Riddle with id $entryId was not modified successfully"}
+                body;
+                $response->getBody()->write($responseBody);
+                return $response->withHeader('content-type', 'application/json')->withStatus(404);
+            }
+            // The riddle to modify doesn't exist
             $responseBody = <<<body
-            {"message": "You must be logged in to edit a riddle"}
+            {"message": "Riddle with id $entryId does not exist"}
             body;
             $response->getBody()->write($responseBody);
-            return $response->withHeader('content-type', 'application/json')->withStatus(400);
+            return $response->withHeader('content-type', 'application/json')->withStatus(404);
         }
 
-        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) && !$entryId <= 0) {
-
-        }
-
-        //TODO: Still in progress
         //If something is not in the PUT, return error
         $responseBody = <<<body
-        {"message": "'title' and/or 'content' key missing"}
+        {"message": "The riddle and/or answer cannot be empty"}
         body;
         $response->getBody()->write($responseBody);
         return $response->withHeader('content-type', 'application/json')->withStatus(400);
     }
 
+    public function deleteRiddleEntry(Request $request, Response $response, array $args){
+        $entryId = intval($args['id'] ?? 0);
+        if($entryId > 0){
+            // Check if the riddle we want to delete exists.
+            if($this->riddlesRepository->checkIfRiddleExists($entryId)) {
+                // The riddle we want to delete exists, so we delete it.
+                if($this->riddlesRepository->deleteRiddleEntry($entryId)){
+                    // The riddle was deleted successfully.
+                    $responseBody = <<<body
+                    {"message": "Riddle with id $entryId was deleted successfully"}
+                    body;
+                    $response->getBody()->write($responseBody);
+                    return $response->withHeader('content-type', 'application/json')->withStatus(200);
+                }
+
+                // The riddle was not deleted successfully.
+                $responseBody = <<<body
+                {"message": "Riddle with id $entryId was not deleted successfully"}
+                body;
+                $response->getBody()->write($responseBody);
+                return $response->withHeader('content-type', 'application/json')->withStatus(404);
+            }
+
+            // The riddle to delete doesn't exist
+            $responseBody = <<<body
+            {"message": "Riddle with id $entryId does not exist"}
+            body;
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(404);
+        }
+    }
 
 }
