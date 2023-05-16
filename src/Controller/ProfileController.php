@@ -31,6 +31,10 @@ class ProfileController
             $formData['picture'] = $this->userRepository->getUuidByID($_SESSION['user_id']);
         }
 
+        if (!is_dir(__DIR__ . '/../../public/uploads')) {
+            mkdir(__DIR__ . '/../../public/uploads', 0777, true);
+        }
+
         return $this->twig->render($response, 'profile.twig', [
             'username' => $username,
             'formAction' => $formAction,

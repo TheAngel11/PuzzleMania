@@ -29,7 +29,6 @@ class TeamStatsController
         $team = null;
         $routeParser = RouteContext::fromRequest($request)->getRouteParser();
         $hasQR = false;
-
         if (isset($_SESSION['user_id'])) {
             $team = $this->teamRepository->getTeamByUserId($_SESSION['user_id']);
             if ($team) {
@@ -47,6 +46,10 @@ class TeamStatsController
         }
 
         $notifications = $messages['notifications'] ?? [];
+
+        if (!is_dir(__DIR__ . '/../../public/assets/qr')) {
+            mkdir(__DIR__ . '/../../public/assets/qr', 0777, true);
+        }
 
         return $this->twig->render($response,
             'teamStats.twig',

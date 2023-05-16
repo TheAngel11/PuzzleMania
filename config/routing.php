@@ -67,7 +67,7 @@ function addRoutes(App $app, Container $container): void
 
         $group->get(
             '/team-stats',
-            TeamStatsController::class . ':showJoin'
+            TeamStatsController::class . ':showTeamStats'
         )->setName('teamStats');
 
         $group->post(
