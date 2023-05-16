@@ -26,6 +26,15 @@ class JoinController
         $routeParser = RouteContext::fromRequest($request)->getRouteParser();
 
         // TODO: handle incorrect teamId's since they can be altered in the HTML
+        // Check if the team id exists in the database:
+        if (isset($data['teamId'])) {
+            $team = $this->teamRepository->getTeamById($data['teamId']);
+            if ($team == null) {
+                $this->flash->addMessage("notifications", "The team you are trying to join does not exist.");
+                return $response->withHeader('Location', $routeParser->urlFor('join'))->withStatus(302);
+            }
+        }
+        // The team id is correct, so we can add the user to the team:
         if (isset($_SESSION['user_id'])) {
             if (isset($data['teamId'])) {
                 $this->teamRepository->addMemberToTeam($data['teamId'], $_SESSION['user_id']);

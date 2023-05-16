@@ -65,9 +65,14 @@ function addRoutes(App $app, Container $container): void
             JoinController::class . ':showJoin'
         )->setName('join');
 
+        $group->post(
+            '/join',
+            JoinController::class . ':handlePost'
+        )->setName('join');
+
         $group->get(
             '/team-stats',
-            TeamStatsController::class . ':showJoin'
+            TeamStatsController::class . ':showTeamStats'
         )->setName('teamStats');
 
         $group->post(
