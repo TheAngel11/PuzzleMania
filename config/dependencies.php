@@ -135,7 +135,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         GameRiddlesController::class,
         function (ContainerInterface $c) {
-            return new GameRiddlesController($c->get('view'), $c->get('game_repository'), $c->get('riddle_repository'));
+            return new GameRiddlesController($c->get('view'), $c->get('game_repository'), $c->get('riddle_repository'), $c->get('team_repository'));
         }
     );
 }

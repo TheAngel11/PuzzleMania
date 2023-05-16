@@ -132,4 +132,18 @@ final class MySQLTeamRepository implements TeamRepository
         $statement->execute();
     }
 
+    // Sum the team score
+    public function sumTeamScore(int $teamId, int $points): void
+    {
+        $query = <<<'QUERY'
+        UPDATE teams SET team_score = team_score + :points WHERE team_id = :team_id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('team_id', $teamId, PDO::PARAM_INT);
+        $statement->bindParam('points', $points, PDO::PARAM_INT);
+
+        $statement->execute();
+    }
 }

@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Salle\PuzzleMania\Repository\MySQLGameRepository;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
+use Salle\PuzzleMania\Repository\MySQLTeamRepository;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 
@@ -15,11 +16,14 @@ class GameRiddlesController
     private Twig $twig;
     private MySQLGameRepository $gameRepository;
     private MySQLRiddleRepository $riddleRepository;
+    private MySQLTeamRepository $teamRepository;
 
-    public function __construct(Twig $twig, MySQLGameRepository $gameRepository, MySQLRiddleRepository $riddleRepository) {
+    public function __construct(Twig $twig, MySQLGameRepository $gameRepository,
+                                MySQLRiddleRepository $riddleRepository, MySQLTeamRepository $teamRepository) {
         $this->twig = $twig;
         $this->gameRepository = $gameRepository;
         $this->riddleRepository = $riddleRepository;
+        $this->teamRepository = $teamRepository;
     }
 
     public function showRiddle(Request $request, Response $response): Response {
@@ -77,6 +81,10 @@ class GameRiddlesController
             $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor
             ('teamStats');
             $finish = true;
+            // We sum the score to the team
+            $team = $this->teamRepository->getTeamByUserId($_SESSION['user_id']);
+            $this->teamRepository->sumTeamScore($team->getId(), $score);
+
         } else {
             $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor
             ('showRiddle', ['gameId' => $gameId, 'riddleId' => $riddleId]);

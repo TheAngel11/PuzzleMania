@@ -17,4 +17,6 @@ interface TeamRepository
     public function getIncompleteTeams();
 
     public function addMemberToTeam(int $teamId, int $userId): void;
+
+    public function sumTeamScore(int $teamId, int $points): void;
 }
