@@ -59,7 +59,7 @@ class RiddlesAPIController
 
     public function getRiddleEntry(Request $request, Response $response, array $args): Response {
         // Get riddle id from the request
-        $entryId = intval($args['id']);
+        $entryId = intval($args['id'] ?? 0);
         // Get the riddle from the database
         $entry = $this->riddlesRepository->getRiddleById($entryId);
         // Check if the riddle exists
@@ -81,51 +81,48 @@ class RiddlesAPIController
     public function postRiddleEntry(Request $request, Response $response): Response {
         $parsedBody = $request->getParsedBody();
         // Get the riddle id from the body
-        $riddleId = intval($parsedBody['id']);
+        $id = intval($parsedBody['id'] ?? 0);
+        // Check if the riddle id alredy exisits
+        if ($this->riddlesRepository->checkIfRiddleExists($id)) {
+            // If it does, return an error
+            $responseBody = <<<body
+            {"message": "Riddle with id $id already exists"}
+            body;
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(400);
+        } else {
+            // If it does not, continue
+            // Check if the riddle and answer are set
+            if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) &&
+                isset($parsedBody['userId']) && isset($parsedBody['id'])) {
+                // Create the riddle
+                $data = Riddle::create();
+                // If it does not, create the riddle entry
+                $data->setId($id);
+                $data->setUserId($parsedBody['userId']);
+                $data->setRiddle($parsedBody['riddle']);
+                $data->setAnswer($parsedBody['answer']);
+                $this->riddlesRepository->createRiddle($data);
 
-        // Check if the riddle and answer are set
-        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) &&
-            isset($parsedBody['userId'])) {
-            // If the user session exists, create the riddle
-            $riddle = $parsedBody['riddle'];
-            $answer = $parsedBody['answer'];
+                $response->getBody()->write(json_encode($data));
+                return $response->withHeader('content-type', 'application/json')->withStatus(201);
 
-            // Create the riddle
-            $data = Riddle::create();
-
-            // Check if the riddle id alredy exisits
-            if ($this->riddlesRepository->checkIfRiddleExists($riddleId)) {
-                // If it does, return an error
+            } else {
+                // Si la riddle, answer, userId o id no están definidos o son nulos, devuelve un error
                 $responseBody = <<<body
-                {"message": "Riddle with id $riddleId already exists"}
+                {"message": "'riddle' and/or 'answer' and/or 'userId' key missing"}
                 body;
                 $response->getBody()->write($responseBody);
                 return $response->withHeader('content-type', 'application/json')->withStatus(400);
             }
-
-            // If it does not, create the riddle entry
-            $data->setId($riddleId);
-            $data->setUserId($parsedBody['userId']);
-            $data->setRiddle($riddle);
-            $data->setAnswer($answer);
-            $riddleEntry = $this->riddlesRepository->createRiddle($data);
-
-            $response->getBody()->write(json_encode($riddleEntry));
-            return $response->withHeader('content-type', 'application/json')->withStatus(201);
         }
-
-        // If the riddle and answer are not set, return an error
-        $responseBody = <<<body
-        {"message": "'riddle' and/or 'answer' and/or 'userId' key missing"}
-        body;
-        $response->getBody()->write($responseBody);
-        return $response->withHeader('content-type', 'application/json')->withStatus(400);
     }
 
     public function putRiddleEntry(Request $request, Response $response, array $args): Response {
         $parsedBody = $request->getParsedBody();
         // Get the id of the riddle we want to modify.
         $entryId = intval($args['id'] ?? 0);
+
         if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) && !$entryId <= 0) {
             // Check if the riddle we want to modify exists.
             if($this->riddlesRepository->checkIfRiddleExists($entryId)) {

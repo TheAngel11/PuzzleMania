@@ -17,31 +17,27 @@ class MySQLRiddleRepository implements RiddleRepository
         $this->databaseConnection = $database;
     }
 
-    public function createRiddle(Riddle $riddle): Riddle
+    public function createRiddle(Riddle $riddle): void
     {
         // Prepare the query
         $query = <<<'QUERY'
-        INSERT INTO riddles(riddle, answer)
-        VALUES(:riddle, :answer)
+        INSERT INTO riddles(riddle_id, user_id, riddle, answer)
+        VALUES(:id, :userID, :riddle, :answer)
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
         // Prepare the binding of the parameters
+        $id = $riddle->getId();
+        $userID = $riddle->getUserId();
         $question = $riddle->getRiddle();
         $answer = $riddle->getAnswer();
         // Bind the parameters
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+        $statement->bindParam('userID', $userID, PDO::PARAM_INT);
         $statement->bindParam('riddle', $question, PDO::PARAM_STR);
         $statement->bindParam('answer', $answer, PDO::PARAM_STR);
 
-
         $statement->execute();
-
-        // Prepare the new riddle to return
-        $id = $this->databaseConnection->lastInsertId();
-        //$riddle->setId($id);
-        //$riddle->setUserId($_SESSION['user_id']);
-
-        return $riddle;
     }
 
     public function getAllRiddles(): array
