@@ -4,6 +4,7 @@ namespace Salle\PuzzleMania\Controller\API;
 
 use Salle\PuzzleMania\Model\Riddle;
 use Salle\PuzzleMania\Repository\RiddleRepository;
+use Salle\PuzzleMania\Repository\UserRepository;
 use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -12,11 +13,13 @@ class RiddlesAPIController
 {
     private Twig $twig;
     private RiddleRepository $riddlesRepository;
+    private UserRepository $userRepository;
 
 
-    public function __construct(Twig $twig, RiddleRepository $riddlesRepository) {
+    public function __construct(Twig $twig, RiddleRepository $riddlesRepository, UserRepository $userRepository) {
         $this->twig = $twig;
         $this->riddlesRepository = $riddlesRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function showRiddles(Request $request, Response $response): Response {
@@ -83,6 +86,20 @@ class RiddlesAPIController
         $parsedBody = $request->getParsedBody();
         // Get the riddle id from the body
         $id = intval($parsedBody['id'] ?? 0);
+        // Get the user id from the body
+        $userId = intval($parsedBody['userId'] ?? 0);
+
+        // Check if the userId is an existing one or not
+        if ($this->userRepository->getUserById($userId) == null) {
+            // If the user doesn't exist, return an error
+            $responseBody = <<<body
+            {"message": "User with id $userId does not exist"}
+            body;
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(404);
+        }
+        // If the user exists, continue
+
         // Check if the riddle id alredy exisits
         if ($this->riddlesRepository->checkIfRiddleExists($id)) {
             // If it does, return an error
