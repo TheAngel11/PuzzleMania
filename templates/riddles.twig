@@ -3,5 +3,31 @@
 {% block title %}Riddles | PuzzleMania{% endblock %}
 
 {% block content %}
-<h1>Hello {{ username }}!</h1>
+
+    <div class="jumbotron mt-5">
+        <div class="container">
+            <h1 class="display-3" data-cy="home__welcomeMsg">Riddles:</h1>
+        </div>
+    </div>
+
+    {% if array_riddles is not empty %}
+        <div class="container mt-3" id="riddles-list">
+            {% for index, riddle in array_riddles %}
+                <div class="card border-grey mb-3" style="border-radius: 10px; border-color: grey;">
+                    <div class="card-body">
+                        <strong>{{ riddle.riddle }}</strong><br>
+                        {{ riddle.answer }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="container mt-3" id="riddles-empty">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">ERROR: Sorry, no riddles found.</h4>
+                <p>Please try again later.</p>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

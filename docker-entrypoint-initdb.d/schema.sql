@@ -1,53 +1,55 @@
+-- Adminer 4.8.1 MySQL 8.0.32 dump
+
 SET NAMES utf8;
-SET
-    time_zone = '+00:00';
+SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-CREATE DATABASE IF NOT EXISTS `puzzlemania`;
-USE `puzzlemania`;
-
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users`
-(
-    `id`        INT                                                     NOT NULL AUTO_INCREMENT,
-    `email`     VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-    `password`  VARCHAR(255)                                            NOT NULL,
-    `createdAt` DATETIME                                                NOT NULL,
-    `updatedAt` DATETIME                                                NOT NULL,
-    `uuid`       VARCHAR(255)                                           ,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `riddles`;
-CREATE TABLE `riddles`
-(
-    `riddle_id`   INT          NOT NULL AUTO_INCREMENT,
-    `user_id`    INT          ,
-    `riddle`      VARCHAR(255) NOT NULL,
-    `answer`    VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`riddle_id`),
-    FOREIGN KEY (user_id) REFERENCES users (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `riddles` (
+                           `riddle_id` int NOT NULL AUTO_INCREMENT,
+                           `user_id` int DEFAULT NULL,
+                           `riddle` varchar(255) NOT NULL,
+                           `answer` varchar(255) NOT NULL,
+                           PRIMARY KEY (`riddle_id`),
+                           KEY `user_id` (`user_id`),
+                           CONSTRAINT `riddles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `teams`;
-CREATE TABLE `teams`
-(
-    `team_id`   INT          NOT NULL AUTO_INCREMENT,
-    `team_name`      VARCHAR(255) NOT NULL,
-    `team_score`    INT          NOT NULL,
-    PRIMARY KEY (`team_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `team_members`;
-CREATE TABLE `team_members`
-(
-    `team_id`   INT          NOT NULL,
-    `user_id`   INT          NOT NULL,
-    PRIMARY KEY (`team_id`, `user_id`),
-    FOREIGN KEY (team_id) REFERENCES teams (team_id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `team_members` (
+                                `team_id` int NOT NULL,
+                                `user_id` int NOT NULL,
+                                PRIMARY KEY (`team_id`,`user_id`),
+                                KEY `user_id` (`user_id`),
+                                CONSTRAINT `team_members_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `teams` (`team_id`),
+                                CONSTRAINT `team_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+DROP TABLE IF EXISTS `teams`;
+CREATE TABLE `teams` (
+                         `team_id` int NOT NULL AUTO_INCREMENT,
+                         `team_name` varchar(255) NOT NULL,
+                         `team_score` int NOT NULL,
+                         PRIMARY KEY (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+                         `id` int NOT NULL AUTO_INCREMENT,
+                         `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+                         `password` varchar(255) NOT NULL,
+                         `createdAt` datetime NOT NULL,
+                         `updatedAt` datetime NOT NULL,
+                         `uuid` varchar(255) DEFAULT NULL,
+                         PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+-- 2023-05-16 17:05:21
 
 DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games`
