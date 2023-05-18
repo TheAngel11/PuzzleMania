@@ -18,7 +18,7 @@ final class MySQLUserRepository implements UserRepository
         $this->databaseConnection = $database;
     }
 
-    public function createUser(User $user): void
+    public function createUser(User $user): int
     {
         $query = <<<'QUERY'
         INSERT INTO users(email, password, coins, createdAt, updatedAt)
@@ -45,6 +45,11 @@ final class MySQLUserRepository implements UserRepository
         $statement->bindParam('updatedAt', $updatedAt, PDO::PARAM_STR);
 
         $statement->execute();
+
+        // Get last inserted id
+        $id = $this->databaseConnection->lastInsertId();
+
+        return intval($id);
     }
 
     public function getUserByEmail(string $email)
@@ -153,5 +158,34 @@ final class MySQLUserRepository implements UserRepository
 
     public function getMembersByTeamId(int $id)
     {
+        $query = <<<'QUERY'
+        SELECT u.* FROM users u
+        LEFT JOIN team_members tm ON tm.user_id = u.id
+        WHERE tm.team_id = :id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $users = [];
+
+        $count = $statement->rowCount();
+        if ($count > 0) {
+            $rows = $statement->fetchAll();
+
+            for ($i = 0; $i < $count; $i++) {
+                $user = User::create()
+                    ->setId(intval($rows[$i]['id']))
+                    ->setEmail($rows[$i]['email'])
+                    //->setPassword($rows[$i]['password']) - don't ever expose pswd!!!!
+                    ->setCreatedAt(date_create_from_format('Y-m-d H:i:s', $rows[$i]['createdAt']))
+                    ->setUpdatedAt(date_create_from_format('Y-m-d H:i:s', $rows[$i]['updatedAt']));
+                $users[] = $user;
+            }
+        }
+        return $users;
     }
 }

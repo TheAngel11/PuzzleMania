@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Salle\PuzzleMania\Controller;
 
+use Salle\PuzzleMania\Repository\TeamRepository;
 use Salle\PuzzleMania\Service\ValidatorService;
 use Salle\PuzzleMania\Repository\UserRepository;
 use Salle\PuzzleMania\Model\User;
@@ -22,7 +23,8 @@ final class SignUpController
 
     public function __construct(
         private Twig $twig,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private TeamRepository $teamRepository
     )
     {
         $this->validator = new ValidatorService();
@@ -76,7 +78,18 @@ final class SignUpController
                 ->setPassword(md5($data['password']))
                 ->setCreatedAt(new DateTime())
                 ->setUpdatedAt(new DateTime());
-            $this->userRepository->createUser($user);
+            $user->setId($this->userRepository->createUser($user));
+
+
+            if (isset($_SESSION['team_id_invite'])) {
+                $this->teamRepository->addMemberToTeam(intval($_SESSION['team_id_invite']), $user->getId());
+                unset($_SESSION['team_id_invite']);
+                $_SESSION['user_id'] = $user->getId();
+                $_SESSION['user_email'] = $user->email();
+                return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
+            }
+
+
             return $response->withHeader('Location', '/sign-in')->withStatus(302);
         }
         return $this->twig->render(

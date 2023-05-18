@@ -51,6 +51,18 @@ CREATE TABLE `users` (
 
 -- 2023-05-16 17:05:21
 
+DROP TABLE IF EXISTS `games`;
+CREATE TABLE `games`
+(
+    `game_id`   INT          NOT NULL AUTO_INCREMENT,
+    `riddle1`   VARCHAR(255) NOT NULL,
+    `riddle2`   VARCHAR(255) NOT NULL,
+    `riddle3`   VARCHAR(255) NOT NULL,
+    `user_id`   INT          NOT NULL,
+    `score`     INT          NOT NULL,
+    PRIMARY KEY (`game_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Now that all tables are created, let's populate the database with test entries
 INSERT INTO riddles(riddle, answer)
 VALUES ('It brings back the lost as though never gone, shines laughter and tears with light

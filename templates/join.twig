@@ -3,19 +3,24 @@
 {% block title %}Join | PuzzleMania{% endblock %}
 
 {% block content %}
-<section class="row ms-auto me-auto">
-    <h1 class="card-title">Create a new team</h1>
+{% if notifs is not empty %}
+    {% for notif in notifs %}
+        <p data-cy="join__message" class="flash-message">{{ notif }}</p>
+    {% endfor %}
+{% endif %}
+<section class="row ms-auto me-auto mt-5 mb-2 container">
+    <h1 class="card-title mb-3">Create a new team</h1>
     <!-- Form for creating a team -->
     <form action="{{ formAction }}" method="post">
         <div class="form-group">
             <label for="teamName">Team Name</label>
-            <input type="text" class="form-control" id="teamName" name="teamName" placeholder="Team Name">
+            <input type="text" class="form-control mt-1" id="teamName" name="teamName" placeholder="Team Name">
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary mt-3">Create</button>
     </form>
 </section>
-<section class="row ms-auto me-auto">
-    <h1 class="card-title">Join an existing team</h1>
+<section class="row ms-auto me-auto container">
+    <h1 class="card-title mb-3 mt-5">Join an existing team</h1>
     <!-- Table with all the incomplete teams -->
     <table class="table table-success table-striped">
         <thead>

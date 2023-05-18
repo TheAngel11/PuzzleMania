@@ -6,6 +6,7 @@ use DI\Container;
 use Salle\PuzzleMania\Controller\API\RiddlesAPIController;
 use Salle\PuzzleMania\Controller\GameIntroController;
 use Salle\PuzzleMania\Controller\GameRiddlesController;
+use Salle\PuzzleMania\Controller\InviteController;
 use Salle\PuzzleMania\Controller\JoinController;
 use Salle\PuzzleMania\Controller\ProfileController;
 use Salle\PuzzleMania\Controller\SignInController;
@@ -66,8 +67,13 @@ function addRoutes(App $app, Container $container): void
 
         $group->get(
             '/team-stats',
-            TeamStatsController::class . ':showJoin'
+            TeamStatsController::class . ':showTeamStats'
         )->setName('teamStats');
+
+        $group->post(
+            '/team-stats',
+            TeamStatsController::class . ':generateQR'
+        )->setName('generateQR');
 
         $group->get(
             '/riddles',
@@ -107,8 +113,9 @@ function addRoutes(App $app, Container $container): void
 
     // make a route /game/{gameId}/riddle/{riddleId}:
     $app->get('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':showRiddle')->setName('showRiddle');
+    $app->post('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':riddleAction')->setName('riddleAction');
 
-
+    $app->get('/invite/join/{teamId}', InviteController::class . ':inviteJoin')->setName('invite');
     //TODO: Falten posts
     //TODO: Falten les rutes amb ID
 }
