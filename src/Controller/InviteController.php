@@ -14,6 +14,7 @@ class InviteController
 {
     public function __construct(
         private TeamRepository $teamRepository,
+        private Messages $flash,
     ) {
     }
 
@@ -22,11 +23,22 @@ class InviteController
         $routeParser = RouteContext::fromRequest($request)->getRouteParser();
 
         if (isset($_SESSION['user_id'])) {
-            $this->teamRepository->addMemberToTeam($_SESSION['team']->getId(), intval($_SESSION['user_id']));
+            $team = $this->teamRepository->getTeamByUserId(intval($request->getAttribute('teamId') ?? 0));
+            if ($team == null) {
+                $this->flash->addMessage('notifications', 'Team does not exist');
+                return $response->withHeader('Location', $routeParser->urlFor('showHome'))->withStatus(302);
+            }
+
+            if ($this->teamRepository->getTeamNumberOfMembers($team->getId()) >= 2) {
+                $this->flash->addMessage('notifications', 'Team is full');
+                return $response->withHeader('Location', $routeParser->urlFor('showHome'))->withStatus(302);
+            }
+
+            $this->teamRepository->addMemberToTeam($team->getId(), intval($_SESSION['user_id']));
             return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
         }
 
-        $_SESSION['team_id_invite'] = $request->getAttribute('teamId');
+        $_SESSION['team_id_invite'] = intval($request->getAttribute('teamId'));
 
         return $response->withHeader('Location', $routeParser->urlFor('signUp'))->withStatus(302);
     }

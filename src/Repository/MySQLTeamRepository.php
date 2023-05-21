@@ -44,14 +44,19 @@ final class MySQLTeamRepository implements TeamRepository
     public function getTeamById(int $id): ?Team
     {
         $query = <<<'QUERY'
-        SELECT * FROM teams WHERE id = :id
+        SELECT * FROM teams WHERE team_id = :id
         QUERY;
 
         $statement = $this->databaseConnection->prepare($query);
 
         $statement->bindParam('id', $id, PDO::PARAM_INT);
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (\Exception $e) {
+            return null;
+        }
+
 
         $team = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -115,6 +120,23 @@ final class MySQLTeamRepository implements TeamRepository
         }
 
         return $result;
+    }
+
+    public function getTeamNumberOfMembers(int $teamId): int
+    {
+        $query = <<<'QUERY'
+        SELECT COUNT(user_id) FROM team_members WHERE team_id = :team_id
+        QUERY;
+
+        $statement = $this->databaseConnection->prepare($query);
+
+        $statement->bindParam('team_id', $teamId, PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return intval($result['COUNT(user_id)']);
     }
 
     public function addMemberToTeam(int $teamId, int $userId): void

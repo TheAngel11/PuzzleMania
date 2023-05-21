@@ -12,9 +12,11 @@ interface TeamRepository
 
     public function getTeamById(int $id): ?Team;
 
-    public function getTeamByUserId(int $id);
+    public function getTeamByUserId(int $id): ?Team;
 
     public function getIncompleteTeams();
+
+    public function getTeamNumberOfMembers(int $teamId): int;
 
     public function addMemberToTeam(int $teamId, int $userId): void;
 

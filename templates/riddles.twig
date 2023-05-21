@@ -9,7 +9,6 @@
             <h1 class="display-3" data-cy="home__welcomeMsg">Riddles:</h1>
         </div>
     </div>
-
     {% if array_riddles is not empty %}
         <div class="container mt-3" id="riddles-list">
             {% for index, riddle in array_riddles %}
@@ -24,8 +23,7 @@
     {% else %}
         <div class="container mt-3" id="riddles-empty">
             <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">ERROR: Sorry, no riddles found.</h4>
-                <p>Please try again later.</p>
+                <h4 class="alert-heading">{{ message }}</h4>
             </div>
         </div>
     {% endif %}

@@ -45,6 +45,7 @@ class TeamStatsController
             }
         }
 
+        $messages = $this->flash->getMessages();
         $notifications = $messages['notifications'] ?? [];
 
         if (!is_dir(__DIR__ . '/../../public/assets/qr')) {

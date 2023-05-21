@@ -41,8 +41,14 @@ class SignInController
             $user = $this->userRepository->getUserById(intval($_SESSION['user_id']));
             $username = explode('@', $user->email)[0];
         }
+
+        $messages = $this->flash->getMessages();
+
+        $notifications = $messages['notifications'] ?? [];
+
         return $this->twig->render($response, 'home.twig', [
-            "username" => $username
+            "username" => $username,
+            "notifs" => $notifications
         ]);
     }
 
