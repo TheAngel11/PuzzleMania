@@ -8,7 +8,9 @@ use JsonSerializable;
 
 class Riddle implements JsonSerializable{
 
-    private string $question;
+    private int $id;
+    private int $userId;
+    private string $riddle;
     private string $answer;
 
     public static function create(): Riddle
@@ -16,17 +18,24 @@ class Riddle implements JsonSerializable{
         return new self();
     }
 
-    /**
-     * Function called when encoded with json_encode
-     */
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
 
-    public function getQuestion(): string
+    public function getId(): int
     {
-        return $this->question;
+        return $this->id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getRiddle(): string
+    {
+        return $this->riddle;
     }
 
     public function getAnswer(): string
@@ -34,13 +43,24 @@ class Riddle implements JsonSerializable{
         return $this->answer;
     }
 
-    public function setQuestion(string $question): void
+    public function setId(int $id): void
     {
-        $this->question = $question;
+        $this->id = $id;
+    }
+
+    public function setUserId(int $userId): void
+    {
+        $this->userId = $userId;
+    }
+
+    public function setRiddle(string $riddle): void
+    {
+        $this->riddle = $riddle;
     }
 
     public function setAnswer(string $answer): void
     {
         $this->answer = $answer;
     }
+
 }

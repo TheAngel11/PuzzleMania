@@ -3,6 +3,7 @@
 namespace Salle\PuzzleMania\Controller;
 
 use Salle\PuzzleMania\Model\Game;
+use Salle\PuzzleMania\Model\Riddle;
 use Salle\PuzzleMania\Repository\MySQLGameRepository;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
 use Salle\PuzzleMania\Repository\MySQLTeamRepository;
@@ -52,7 +53,10 @@ class GameIntroController
         // Generating riddles
         $riddles = $this->riddleRepository->getRandomRiddles();
         //Saving the game in the DB
-        $game = new Game($riddles[0], $riddles[1], $riddles[2], $_SESSION['user_id'], 10);
+
+        //riddles is an array of Riddle objects
+        $game = new Game($riddles[0]->getQuestion(), $riddles[1]->getQuestion(), $riddles[2]->getQuestion(), $_SESSION['user_id'], 10);
+
         $gameId = $this->gameRepository->createGame($game);
 
         return $response->withHeader('Location', "/game/$gameId/riddle/1")->withStatus(302);
