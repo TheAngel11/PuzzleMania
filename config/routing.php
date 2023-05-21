@@ -65,6 +65,11 @@ function addRoutes(App $app, Container $container): void
             JoinController::class . ':showJoin'
         )->setName('join');
 
+        $group->post(
+            '/join',
+            JoinController::class . ':handlePost'
+        )->setName('join');
+
         $group->get(
             '/team-stats',
             TeamStatsController::class . ':showTeamStats'
@@ -81,9 +86,25 @@ function addRoutes(App $app, Container $container): void
         )->setName('riddles');
 
         $group->get(
+            '/riddles/{id}',
+            RiddlesAPIController::class . ':showRiddleById'
+        )->setName('riddleId');
+
+        $group->get(
             '/game',
             GameIntroController::class . ':showGame'
         )->setName('game');
+
+        $group->get(
+            '/game/{gameId}/riddle/{riddleId}',
+            GameRiddlesController::class . ':showRiddle'
+        )->setName('showRiddle');
+
+        $group->post(
+            '/game/{gameId}/riddle/{riddleId}',
+            GameRiddlesController::class . ':riddleAction'
+        )->setName('riddleAction');
+
 
     })->add(AuthorizationMiddleware::class);
 
@@ -112,10 +133,6 @@ function addRoutes(App $app, Container $container): void
 
 
     // make a route /game/{gameId}/riddle/{riddleId}:
-    $app->get('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':showRiddle')->setName('showRiddle');
-    $app->post('/game/{gameId}/riddle/{riddleId}', GameRiddlesController::class . ':riddleAction')->setName('riddleAction');
 
     $app->get('/invite/join/{teamId}', InviteController::class . ':inviteJoin')->setName('invite');
-    //TODO: Falten posts
-    //TODO: Falten les rutes amb ID
 }

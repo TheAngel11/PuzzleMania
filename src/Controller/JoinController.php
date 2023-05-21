@@ -10,6 +10,8 @@ use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
+const MAX_TEAM_NAME_LENGTH = 255;
+
 class JoinController
 {
     public function __construct(
@@ -25,12 +27,31 @@ class JoinController
         $data = $request->getParsedBody();
         $routeParser = RouteContext::fromRequest($request)->getRouteParser();
 
-        // TODO: handle incorrect teamId's since they can be altered in the HTML
+        // Check if the team id exists in the database:
+        if (isset($data['teamId'])) {
+            $team = $this->teamRepository->getTeamById(intval($data['teamId']));
+            if ($team == null) {
+                $this->flash->addMessage("notifications", "The team you are trying to join does not exist.");
+                return $response->withHeader('Location', $routeParser->urlFor('join'))->withStatus(302);
+            }
+        }
+        // The team id is correct, so we can add the user to the team:
         if (isset($_SESSION['user_id'])) {
             if (isset($data['teamId'])) {
+                if ($this->teamRepository->getTeamNumberOfMembers(intval($data['teamId'])) >= 2) {
+                    $this->flash->addMessage('notifications', 'Team is full');
+                    return $response->withHeader('Location', $routeParser->urlFor('join'))->withStatus(302);
+                }
+
                 $this->teamRepository->addMemberToTeam($data['teamId'], $_SESSION['user_id']);
                 return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
             } else if (isset($data['teamName'])) {
+                // Check that the name of the team has an appropriate length
+                // No more than the limit of chars established by the database (VARCHAR (255))
+                if (strlen($data['teamName']) > MAX_TEAM_NAME_LENGTH) {
+                    $this->flash->addMessage("notifications", "The team name is too long.");
+                    return $response->withHeader('Location', $routeParser->urlFor('join'))->withStatus(302);
+                }
                 $newTeamId = $this->teamRepository->createTeam(new Team(0, $data['teamName'], 0));
                 $this->teamRepository->addMemberToTeam($newTeamId, $_SESSION['user_id']);
                 return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
@@ -55,6 +76,8 @@ class JoinController
 
             $incompleteTeams = $this->teamRepository->getIncompleteTeams();
         }
+
+        $messages = $this->flash->getMessages();
 
         $notifications = $messages['notifications'] ?? [];
 

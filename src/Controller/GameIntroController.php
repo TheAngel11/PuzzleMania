@@ -7,6 +7,7 @@ use Salle\PuzzleMania\Model\Riddle;
 use Salle\PuzzleMania\Repository\MySQLGameRepository;
 use Salle\PuzzleMania\Repository\MySQLRiddleRepository;
 use Salle\PuzzleMania\Repository\MySQLTeamRepository;
+use Slim\Flash\Messages;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -19,12 +20,15 @@ class GameIntroController
     private MySQLGameRepository $gameRepository;
     private MySQLRiddleRepository $riddleRepository;
 
+    private Messages $flash;
+
     public function __construct(Twig $twig, MySQLTeamRepository $teamRepository, MySQLGameRepository $gameRepository,
-    MySQLRiddleRepository $riddleRepository) {
+    MySQLRiddleRepository $riddleRepository, Messages $flash) {
         $this->twig = $twig;
         $this->teamRepository = $teamRepository;
         $this->gameRepository = $gameRepository;
         $this->riddleRepository = $riddleRepository;
+        $this->flash = $flash;
     }
 
     public function showGame(Request $request, Response $response): Response {
@@ -32,6 +36,7 @@ class GameIntroController
             $team = $this->teamRepository->getTeamByUserId($_SESSION['user_id']);
 
             if ($team == null) {
+                $this->flash->addMessage('notifications', 'You must join a team before playing');
                 return $response->withHeader('Location', '/join')->withStatus(302);
             }
 

@@ -48,6 +48,32 @@ class RiddlesAPIController
         }
     }
 
+    public function showRiddleById(Request $request, Response $response): Response {
+        $riddleId = intval($request->getAttribute('id') ?? 0);
+
+        $riddle = $this->riddlesRepository->getRiddleById($riddleId);
+        if ($riddle) {
+            $riddles = [$riddle];
+            return $this->twig->render(
+                $response,
+                'riddles.twig',
+                [
+                    'array_riddles' => $riddles
+                ]
+            );
+        } else {
+            // If it does not, show an error
+            // Render the riddles page with an error message
+            return $this->twig->render(
+                $response,
+                'riddles.twig',
+                [
+                    'message' => "Riddle with id $riddleId does not exist"
+                ]
+            );
+        }
+    }
+
 
     /****************************************************************************************/
     /****************************************************************************************/
