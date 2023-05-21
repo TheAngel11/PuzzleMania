@@ -2,6 +2,8 @@
 
 namespace Salle\PuzzleMania\Controller;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Salle\PuzzleMania\Repository\MySQLGameRepository;
@@ -30,6 +32,8 @@ class GameRiddlesController
         $riddleId = $request->getAttribute('riddleId');
         $gameId = $request->getAttribute('gameId');
 
+        $catImage = $this->getCatImage();
+
         // Get the riddle
         $riddle = $this->gameRepository->getRiddle($gameId, $riddleId);
 
@@ -43,7 +47,8 @@ class GameRiddlesController
         return $this->twig->render($response, 'game-riddles.twig', [
             'formActionSubmit' => $formAction,
             'riddleId' => $riddleId,
-            'riddle' => $riddle
+            'riddle' => $riddle,
+            'catImage' => $catImage
         ]);
     }
 
@@ -100,5 +105,23 @@ class GameRiddlesController
             'formAction' => $formAction,
             'score' => $score
         ]);
+    }
+
+    public function getCatImage() {
+        $apiKey = 'live_amaf3W0utjlsRFMDkILeWjdoKxECAsx93UZYDFoLUYSUlXpgPiIiA6GjtWnUvamW';
+        $apiUrl = "https://api.thecatapi.com/v1/images/search?limit=1&api_key=$apiKey";
+        $guzzleClient = new Client();
+        $response = null;
+        try {
+            // Make the request
+            $request = $guzzleClient->request('GET', $apiUrl);
+            if($request->getStatusCode() == 200){
+                $response = json_decode($request->getBody()->getContents());
+            }
+
+        } catch (GuzzleException $e) {
+            echo $e->getMessage();
+        }
+        return $response[0]->url;
     }
 }
