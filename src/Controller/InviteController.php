@@ -44,6 +44,12 @@ class InviteController
             return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
         }
 
+        $team = $this->teamRepository->getTeamById(intval($request->getAttribute('teamId')));
+        if ($team == null) {
+            $this->flash->addMessage('notifications', 'Team does not exist');
+            return $response->withHeader('Location', $routeParser->urlFor('showHome'))->withStatus(302);
+        }
+
         $_SESSION['team_id_invite'] = intval($request->getAttribute('teamId'));
 
         return $response->withHeader('Location', $routeParser->urlFor('signUp'))->withStatus(302);
