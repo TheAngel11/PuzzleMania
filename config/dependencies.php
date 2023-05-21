@@ -79,7 +79,7 @@ function addDependencies(ContainerInterface $container): void
     $container->set(
         SignUpController::class,
         function (ContainerInterface $c) {
-            return new SignUpController($c->get('view'), $c->get('user_repository'), $c->get('team_repository'));
+            return new SignUpController($c->get('view'), $c->get('user_repository'), $c->get('team_repository'), $c->get('flash'));
         }
     );
 

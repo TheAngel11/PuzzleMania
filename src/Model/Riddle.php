@@ -8,8 +8,8 @@ use JsonSerializable;
 
 class Riddle implements JsonSerializable{
 
-    private int $id;
-    private int $userId;
+    private ?int $id;
+    private ?int $userId;
     private string $riddle;
     private string $answer;
 
@@ -23,12 +23,12 @@ class Riddle implements JsonSerializable{
         return get_object_vars($this);
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): int
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
@@ -43,12 +43,12 @@ class Riddle implements JsonSerializable{
         return $this->answer;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
-    public function setUserId(int $userId): void
+    public function setUserId(?int $userId): void
     {
         $this->userId = $userId;
     }

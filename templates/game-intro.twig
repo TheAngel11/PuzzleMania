@@ -3,6 +3,11 @@
 {% block title %}Game Intro | PuzzleMania{% endblock %}
 
 {% block content %}
+    {% if notifs is not empty %}
+        {% for notif in notifs %}
+            <p data-cy="sign-in__message" class="flash-message">{{ notif }}</p>
+        {% endfor %}
+    {% endif %}
     <div class="jumbotron mt-5">
         <div class="container">
             <h1 class="display-3" data-cy="home__welcomeMsg">Team: {{ groupName }}</h1>

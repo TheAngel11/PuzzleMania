@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Salle\PuzzleMania\Controller;
 
+use http\Message;
 use Salle\PuzzleMania\Repository\TeamRepository;
 use Salle\PuzzleMania\Service\ValidatorService;
 use Salle\PuzzleMania\Repository\UserRepository;
@@ -14,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
+use Slim\Flash\Messages;
 
 use DateTime;
 
@@ -24,7 +26,8 @@ final class SignUpController
     public function __construct(
         private Twig $twig,
         private UserRepository $userRepository,
-        private TeamRepository $teamRepository
+        private TeamRepository $teamRepository,
+        private Messages $flash
     )
     {
         $this->validator = new ValidatorService();
@@ -82,6 +85,11 @@ final class SignUpController
 
 
             if (isset($_SESSION['team_id_invite'])) {
+                if ($this->teamRepository->getTeamNumberOfMembers(intval($_SESSION['team_id_invite'])) >= 2) {
+                    $this->flash->addMessage('notifications', 'Team is full');
+                    unset($_SESSION['team_id_invite']);
+                    return $response->withHeader('Location', $routeParser->urlFor('signIn'))->withStatus(302);
+                }
                 $this->teamRepository->addMemberToTeam(intval($_SESSION['team_id_invite']), $user->getId());
                 unset($_SESSION['team_id_invite']);
                 $_SESSION['user_id'] = $user->getId();

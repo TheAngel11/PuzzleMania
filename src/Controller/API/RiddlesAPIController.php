@@ -89,14 +89,13 @@ class RiddlesAPIController
 
     public function getRiddleEntry(Request $request, Response $response, array $args): Response {
         // Get riddle id from the request
-        $entryId = intval($args['id'] ?? 0);
+        $entryId = intval($args['id']);
         // Get the riddle from the database
         $entry = $this->riddlesRepository->getRiddleById($entryId);
         // Check if the riddle exists
         if ($entry) {
             // If it does, return the riddle
-            $responseBody = json_encode($entry);
-            $response->getBody()->write($responseBody);
+            $response->getBody()->write(json_encode($entry));
             return $response->withHeader('content-type', 'application/json')->withStatus(200);
         } else {
             // If it does not, return an error
@@ -111,12 +110,32 @@ class RiddlesAPIController
     public function postRiddleEntry(Request $request, Response $response): Response {
         $parsedBody = $request->getParsedBody();
         // Get the riddle id from the body
-        $id = intval($parsedBody['id'] ?? 0);
+        if (isset($parsedBody['id'])) {
+            $id = intval($parsedBody['id']);
+        } else {
+            $id = null;
+        }
+
+        if (isset($parsedBody['userId'])) {
+            $userId = intval($parsedBody['userId']);
+        } else {
+            $userId = null;
+        }
         // Get the user id from the body
-        $userId = intval($parsedBody['userId'] ?? 0);
+
+
+        if (!isset($parsedBody['riddle']) || !isset($parsedBody['answer']) ||
+            !isset($parsedBody['userId'])) {
+            // Si la riddle, answer, userId o id no están definidos o son nulos, devuelve un error
+            $responseBody = <<<body
+                {"message": "'riddle' and/or 'answer' and/or 'userId' key missing"}
+                body;
+            $response->getBody()->write($responseBody);
+            return $response->withHeader('content-type', 'application/json')->withStatus(400);
+        }
 
         // Check if the userId is an existing one or not
-        if ($this->userRepository->getUserById($userId) == null) {
+        if ($userId != null && $this->userRepository->getUserById($userId) == null) {
             // If the user doesn't exist, return an error
             $responseBody = <<<body
             {"message": "User with id $userId does not exist"}
@@ -127,7 +146,7 @@ class RiddlesAPIController
         // If the user exists, continue
 
         // Check if the riddle id alredy exisits
-        if ($this->riddlesRepository->checkIfRiddleExists($id)) {
+        if ($id != null && $this->riddlesRepository->checkIfRiddleExists($id)) {
             // If it does, return an error
             $responseBody = <<<body
             {"message": "Riddle with id $id already exists"}
@@ -137,49 +156,38 @@ class RiddlesAPIController
         } else {
             // If it does not, continue
             // Check if the riddle and answer are set
-            if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) &&
-                isset($parsedBody['userId']) && isset($parsedBody['id'])) {
-                // Create the riddle
-                $data = Riddle::create();
-                // If it does not, create the riddle entry
-                $data->setId($id);
-                $data->setUserId($parsedBody['userId']);
-                $data->setRiddle($parsedBody['riddle']);
-                $data->setAnswer($parsedBody['answer']);
-                $this->riddlesRepository->createRiddle($data);
 
-                $response->getBody()->write(json_encode($data));
-                return $response->withHeader('content-type', 'application/json')->withStatus(201);
+            // Create the riddle
+            $data = Riddle::create();
+            // If it does not, create the riddle entry
+            $data->setId($id);
+            $data->setUserId($userId);
+            $data->setRiddle($parsedBody['riddle']);
+            $data->setAnswer($parsedBody['answer']);
+            $riddleId = $this->riddlesRepository->createRiddle($data);
+            $data->setId($riddleId);
 
-            } else {
-                // Si la riddle, answer, userId o id no están definidos o son nulos, devuelve un error
-                $responseBody = <<<body
-                {"message": "'riddle' and/or 'answer' and/or 'userId' key missing"}
-                body;
-                $response->getBody()->write($responseBody);
-                return $response->withHeader('content-type', 'application/json')->withStatus(400);
-            }
+            $response->getBody()->write(json_encode($data));
+            return $response->withHeader('content-type', 'application/json')->withStatus(201);
         }
     }
 
     public function putRiddleEntry(Request $request, Response $response, array $args): Response {
         $parsedBody = $request->getParsedBody();
         // Get the id of the riddle we want to modify.
-        $entryId = intval($args['id'] ?? 0);
+        $entryId = intval($args['id']);
 
-        if (isset($parsedBody['riddle']) && isset($parsedBody['answer']) && !$entryId <= 0) {
+        if (isset($parsedBody['riddle']) && isset($parsedBody['answer'])) {
             // Check if the riddle we want to modify exists.
             if($this->riddlesRepository->checkIfRiddleExists($entryId)) {
                 // The riddle we want to modify exists, so we modify it.
                 $riddle = $parsedBody['riddle'];
                 $answer = $parsedBody['answer'];
 
-                if($this->riddlesRepository->modifyRiddleEntry($entryId, $riddle, $answer)){
+                $updatedRiddle = $this->riddlesRepository->modifyRiddleEntry($entryId, $riddle, $answer);
+                if($updatedRiddle){
                     // The riddle was modified successfully.
-                    $responseBody = <<<body
-                    {"message": "Riddle with id $entryId was modified successfully"}
-                    body;
-                    $response->getBody()->write($responseBody);
+                    $response->getBody()->write(json_encode($updatedRiddle));
                     return $response->withHeader('content-type', 'application/json')->withStatus(200);
                 }
 
@@ -200,7 +208,7 @@ class RiddlesAPIController
 
         //If something is not in the PUT, return error
         $responseBody = <<<body
-        {"message": "The riddle and/or answer cannot be empty"}
+        {"message": "'riddle' and/or 'answer' key missing"}
         body;
         $response->getBody()->write($responseBody);
         return $response->withHeader('content-type', 'application/json')->withStatus(400);
@@ -215,7 +223,7 @@ class RiddlesAPIController
                 if($this->riddlesRepository->deleteRiddleEntry($entryId)){
                     // The riddle was deleted successfully.
                     $responseBody = <<<body
-                    {"message": "Riddle with id $entryId was deleted successfully"}
+                    {"message": "Riddle with id $entryId was successfully deleted"}
                     body;
                     $response->getBody()->write($responseBody);
                     return $response->withHeader('content-type', 'application/json')->withStatus(200);

@@ -23,7 +23,13 @@ class InviteController
         $routeParser = RouteContext::fromRequest($request)->getRouteParser();
 
         if (isset($_SESSION['user_id'])) {
-            $team = $this->teamRepository->getTeamByUserId(intval($request->getAttribute('teamId') ?? 0));
+            $team = $this->teamRepository->getTeamByUserId(intval($_SESSION['user_id']));
+            if ($team != null) {
+                $this->flash->addMessage('notifications', 'You are already in a team.');
+                return $response->withHeader('Location', $routeParser->urlFor('teamStats'))->withStatus(302);
+            }
+
+            $team = $this->teamRepository->getTeamById(intval($request->getAttribute('teamId')) ?? 0);
             if ($team == null) {
                 $this->flash->addMessage('notifications', 'Team does not exist');
                 return $response->withHeader('Location', $routeParser->urlFor('showHome'))->withStatus(302);

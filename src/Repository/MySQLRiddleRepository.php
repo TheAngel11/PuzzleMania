@@ -17,13 +17,21 @@ class MySQLRiddleRepository implements RiddleRepository
         $this->databaseConnection = $database;
     }
 
-    public function createRiddle(Riddle $riddle): void
+    public function createRiddle(Riddle $riddle): int
     {
         // Prepare the query
-        $query = <<<'QUERY'
-        INSERT INTO riddles(riddle_id, user_id, riddle, answer)
-        VALUES(:id, :userID, :riddle, :answer)
-        QUERY;
+        if ($riddle->getId() == null) {
+            $query = <<<'QUERY'
+            INSERT INTO riddles(user_id, riddle, answer)
+            VALUES(:userID, :riddle, :answer)
+            QUERY;
+        } else {
+            $query = <<<'QUERY'
+            INSERT INTO riddles(riddle_id, user_id, riddle, answer)
+            VALUES(:id, :userID, :riddle, :answer)
+            QUERY;
+        }
+
 
         $statement = $this->databaseConnection->prepare($query);
         // Prepare the binding of the parameters
@@ -32,12 +40,16 @@ class MySQLRiddleRepository implements RiddleRepository
         $question = $riddle->getRiddle();
         $answer = $riddle->getAnswer();
         // Bind the parameters
-        $statement->bindParam('id', $id, PDO::PARAM_INT);
+        if ($id != null) {
+            $statement->bindParam('id', $id, PDO::PARAM_INT);
+        }
         $statement->bindParam('userID', $userID, PDO::PARAM_INT);
         $statement->bindParam('riddle', $question, PDO::PARAM_STR);
         $statement->bindParam('answer', $answer, PDO::PARAM_STR);
 
         $statement->execute();
+
+        return intval($this->databaseConnection->lastInsertId());
     }
 
     public function getAllRiddles(): array
@@ -68,9 +80,13 @@ class MySQLRiddleRepository implements RiddleRepository
         }
     }
 
-    public function getRandomRiddles(): array
+    public function getRandomRiddles(): ?array
     {
         $riddles = $this->getAllRiddles();
+
+        if ($riddles == null || sizeof($riddles) < 3) {
+            return null;
+        }
 
         shuffle($riddles);
         return array_slice($riddles, 0, NUM_OF_RIDDLES);
@@ -93,6 +109,8 @@ class MySQLRiddleRepository implements RiddleRepository
         else {
             $row = $statement->fetch();
             $riddle = Riddle::create();
+            $riddle->setId($row['riddle_id']);
+            $riddle->setUserId($row['user_id']);
             $riddle->setRiddle($row['riddle']);
             $riddle->setAnswer($row['answer']);
             return $riddle;
@@ -119,7 +137,7 @@ class MySQLRiddleRepository implements RiddleRepository
         }
     }
 
-    public function modifyRiddleEntry(int $riddleId, string $question, string $answer): bool
+    public function modifyRiddleEntry(int $riddleId, string $question, string $answer): ?Riddle
     {
         // Prepare the query
         // Take the corresponding riddle and update it
@@ -134,7 +152,9 @@ class MySQLRiddleRepository implements RiddleRepository
         $statement->bindParam('id', $riddleId, PDO::PARAM_INT);
         $statement->execute();
         // If the riddle has been updated successfully return true, otherwise return false
-        return $statement->rowCount() > 0;
+        if ($statement->rowCount() <= 0) return null;
+
+        return $this->getRiddleById($riddleId);
     }
 
     public function deleteRiddleEntry(int $riddleId): bool

@@ -42,10 +42,13 @@ class GameIntroController
 
             $formAction = RouteContext::fromRequest($request)->getRouteParser()->urlFor('game');
 
+            $messages = $this->flash->getMessages();
+            $notifications = $messages['notifications'] ?? [];
 
             return $this->twig->render($response, 'game-intro.twig', [
                 'groupName' => $team->getName(),
-                'formAction' => $formAction
+                'formAction' => $formAction,
+                'notifs' => $notifications
             ]);
 
         } else {
@@ -54,10 +57,16 @@ class GameIntroController
     }
 
     public function gameAction(Request $request, Response $response): Response {
+        $routeParser = RouteContext::fromRequest($request)->getRouteParser();
 
         // Generating riddles
         $riddles = $this->riddleRepository->getRandomRiddles();
         //Saving the game in the DB
+
+        if ($riddles == null) {
+            $this->flash->addMessage('notifications', 'There are not enough riddles in the database');
+            return $response->withHeader('Location', $routeParser->urlFor('game'))->withStatus(302);
+        }
 
         //riddles is an array of Riddle objects
         $game = new Game($riddles[0]->getQuestion(), $riddles[1]->getQuestion(), $riddles[2]->getQuestion(), $_SESSION['user_id'], 10);

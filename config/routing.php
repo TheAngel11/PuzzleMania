@@ -81,16 +81,6 @@ function addRoutes(App $app, Container $container): void
         )->setName('generateQR');
 
         $group->get(
-            '/riddles',
-            RiddlesAPIController::class . ':showRiddles'
-        )->setName('riddles');
-
-        $group->get(
-            '/riddles/{id}',
-            RiddlesAPIController::class . ':showRiddleById'
-        )->setName('riddleId');
-
-        $group->get(
             '/game',
             GameIntroController::class . ':showGame'
         )->setName('game');
@@ -130,6 +120,16 @@ function addRoutes(App $app, Container $container): void
         '/api/riddle/{id}',
         RiddlesAPIController::class . ':deleteRiddleEntry'
     );
+
+    $app->get(
+        '/riddles',
+        RiddlesAPIController::class . ':showRiddles'
+    )->setName('riddles');
+
+    $app->get(
+        '/riddles/{id}',
+        RiddlesAPIController::class . ':showRiddleById'
+    )->setName('riddleId');
 
 
     // make a route /game/{gameId}/riddle/{riddleId}:
