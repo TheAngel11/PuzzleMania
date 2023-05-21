@@ -1,0 +1,41 @@
+{% extends "base.twig" %}
+
+{% block title %}Game Riddles | PuzzleMania{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="mt-5 pt-5 mb-5">Riddle {{ riddleId }}</h1>
+    <p class="lead ms-5 me-5 ps-5 pe-5">{{ riddle }}</p>
+    {% if not formAction %}
+        <form action="{{ formActionSubmit }}" method="POST" class="form-signin">
+            <input type="text" name="riddle" placeholder="Enter your answer" id="inputRiddle" class="form-control mb-2">
+            <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block mt-2 mb-2">
+        </form>
+    {% endif %}
+
+    {% if catImage %}
+    <img src="{{ catImage }}" alt="cat" class="img-fluid mt-5 mb-5">
+    {% endif %}
+
+    {% if formAction %}
+        {% if correct %}
+            <p class="valid-feedback mb-3 h3" style="display: block">Correct!</p>
+        {% else %}
+            <p class="invalid-feedback mb-0 h3" style="display: block">Incorrect! The correct answer is:</p>
+            <p class="valid-feedback mb-3 h3" style="display: block">{{ answer }}</p>
+        {% endif %}
+
+            {% if finish %}
+                <div class="container">
+                    <p class="finish-message" style="display: block">Game Over!</p>
+                    <p class="finish-message" style="display: block">You finished with {{ score }} points.</p>
+                </div>
+
+                <a href="{{ formAction }}" class="btn btn-lg btn-primary btn-block mt-2">Finish</a>
+            {% else %}
+                <a href="{{ formAction }}" class="btn btn-lg btn-primary btn-block mt-2">Next</a>
+            {% endif %}
+    {% endif %}
+
+
+{% endblock %}

@@ -3,25 +3,27 @@
 {% block title %}Sign-up | PuzzleMania{% endblock %}
 
 {% block content %}
-    <h1>Sign up here!</h1>
-    <form data-cy="sign-up" action="{{ formAction }}" method="POST">
+    <div class="text-center">
+        <h1 class="mt-5 pt-5">Sign up here!</h1>
+        <form data-cy="sign-up" action="{{ formAction }}" method="POST" class="form-signin">
+            <label class="h5 mb-1 mt-3 font-weight-normal"> Email </label>
+            <input data-cy="sign-up__email" type="text" name="email" placeholder="Enter your email"
+                   value="{{ formData.email }}" id="inputEmail" class="form-control">
+            {% if formErrors['email'] %}
+                <p data-cy="sign-up__wrongEmail" class="invalid-feedback mb-0 h3" style="display: block">{{ formErrors['email'] }}</p>
+            {% endif %}
 
-        <label> Email </label>
-        <input data-cy="sign-up__email" type="text" name="email" placeholder="Enter your email"
-               value="{{ formData.email }}">
-        {% if formErrors['email'] %}
-            <p data-cy="sign-up__wrongEmail">{{ formErrors['email'] }}</p>
-        {% endif %}
+            <label class="h5 mb-1 mt-3 font-weight-normal"> Password </label>
+            <input data-cy="sign-up__password" type="password" name="password" placeholder="Enter your password"
+                   id="inputPassword" class="form-control">
+            <label class="h5 mb-1 mt-3 font-weight-normal"> Repeat Password </label>
+            <input data-cy="sign-up__repeatPassword" type="password" name="repeatPassword"
+                   placeholder="Repeat your password" id="inputPassword" class="form-control">
+            {% if formErrors['password'] %}
+                <p data-cy="sign-up__wrongPassword" class="invalid-feedback mb-0 h3" style="display: block">{{ formErrors['password'] }}</p>
+            {% endif %}
 
-        <label> Password </label>
-        <input data-cy="sign-up__password" type="password" name="password" placeholder="Enter your password">
-        <label> Repeat Password </label>
-        <input data-cy="sign-up__repeatPassword" type="password" name="repeatPassword"
-               placeholder="Repeat your password">
-        {% if formErrors['password'] %}
-            <p data-cy="sign-up__wrongPassword">{{ formErrors['password'] }}</p>
-        {% endif %}
-
-        <input data-cy="sign-up__btn" type="submit" value="Sign-up">
-    </form>
+            <input data-cy="sign-up__btn" type="submit" value="Sign-up" class="btn btn-lg btn-primary btn-block">
+        </form>
+    </div>
 {% endblock %}

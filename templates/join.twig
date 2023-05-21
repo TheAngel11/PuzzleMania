@@ -1,0 +1,68 @@
+{% extends "base.twig" %}
+
+{% block title %}Join | PuzzleMania{% endblock %}
+
+{% block content %}
+{% if notifs is not empty %}
+    {% for notif in notifs %}
+        <p data-cy="join__message" class="flash-message">{{ notif }}</p>
+    {% endfor %}
+{% endif %}
+<section class="row ms-auto me-auto mt-5 mb-2 container">
+    <h1 class="card-title mb-3">Create a new team</h1>
+    <!-- Form for creating a team -->
+    <form action="{{ formAction }}" method="post">
+        <div class="form-group">
+            <label for="teamName">Team Name</label>
+            <input type="text" class="form-control mt-1" id="teamName" name="teamName" placeholder="Team Name">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Create</button>
+    </form>
+</section>
+<section class="row ms-auto me-auto container">
+    <h1 class="card-title mb-3 mt-5">Join an existing team</h1>
+    <!-- Table with all the incomplete teams -->
+    <table class="table table-success table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Team Name</th>
+            <th scope="col">Members</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for team in incompleteTeams %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ team.name }}</td>
+            <td>1/2</td>
+            <td><button type="button" class="btn btn-primary" onclick="joinTeam({{ team.id }})">Join</button></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
+
+{% block script %}
+{{ parent() }}
+<script>
+
+    function joinTeam(teamId) {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '{{ formAction }}';
+        const field = document.createElement('input');
+        field.type = 'hidden';
+        field.name = 'teamId';
+        field.value = teamId;
+        form.appendChild(field);
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+    }
+
+</script>
+
+{% endblock %}

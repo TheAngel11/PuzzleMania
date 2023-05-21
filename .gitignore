@@ -1,3 +1,6 @@
+public/uploads/
 vendor/
 .idea/
 .vscode/
+public/bootstrap
+public/assets/qr

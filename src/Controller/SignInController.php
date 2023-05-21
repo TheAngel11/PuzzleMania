@@ -41,8 +41,14 @@ class SignInController
             $user = $this->userRepository->getUserById(intval($_SESSION['user_id']));
             $username = explode('@', $user->email)[0];
         }
+
+        $messages = $this->flash->getMessages();
+
+        $notifications = $messages['notifications'] ?? [];
+
         return $this->twig->render($response, 'home.twig', [
-            "username" => $username
+            "username" => $username,
+            "notifs" => $notifications
         ]);
     }
 
@@ -70,6 +76,7 @@ class SignInController
                 $errors['password'] = 'Your email and/or password are incorrect.';
             } else {
                 $_SESSION['user_id'] = $user->id;
+                $_SESSION['user_email'] = $user->email;     // Also saving the email
                 return $response->withHeader('Location', '/')->withStatus(302);
             }
         }

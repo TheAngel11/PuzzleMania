@@ -3,5 +3,37 @@
 {% block title %}Home | PuzzleMania{% endblock %}
 
 {% block content %}
-<h1 data-cy="home__welcomeMsg">Hello {{ username }}!</h1>
+    {% if notifs is not empty %}
+        {% for notif in notifs %}
+            <p data-cy="home__message" class="flash-message">{{ notif }}</p>
+        {% endfor %}
+    {% endif %}
+<div class="jumbotron mt-5">
+    <div class="container">
+        <h1 class="display-3" data-cy="home__welcomeMsg">Hello {{ username }}!</h1>
+        <p>Welcome to PuzzleMania, the best platform for anyone who loves to challenge their minds and improve their cognitive abilities.</p>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Description</h2>
+            <p class="text-justify">PuzzleMania is a platform to improve your cognitive skills in a fun way to pass the time while also keeping their minds sharp.</p>
+        </div>
+        <div class="col-md-4">
+            <h2>Characteristics</h2>
+            <p class="text-justify">PuzzleMania is a platform done by students and also specifically designed with students in mind, in order to provide a good experience that is both rewarding and educational.</p>
+        </div>
+        <div class="col-md-4">
+            <h2>Features</h2>
+            <p class="text-justify">This platform provides students to create new riddles that will be added to the platform. You can also guess riddles by joining a team and starting a new game.
+                Some other features of PuzzleMania are seeing and modifying your profile, and seeing your team stats of your last game played.</p>
+        </div>
+    </div>
+
+    <hr>
+
+</div>
 {% endblock %}
