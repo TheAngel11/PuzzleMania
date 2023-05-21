@@ -69,7 +69,7 @@ class GameIntroController
         }
 
         //riddles is an array of Riddle objects
-        $game = new Game($riddles[0]->getQuestion(), $riddles[1]->getQuestion(), $riddles[2]->getQuestion(), $_SESSION['user_id'], 10);
+        $game = new Game($riddles[0]->getRiddle(), $riddles[1]->getRiddle(), $riddles[2]->getRiddle(), $_SESSION['user_id'], 10);
 
         $gameId = $this->gameRepository->createGame($game);
 

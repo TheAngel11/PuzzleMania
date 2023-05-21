@@ -16,6 +16,42 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `games`
+--
+
+DROP TABLE IF EXISTS `games`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `games` (
+  `game_id` int NOT NULL AUTO_INCREMENT,
+  `riddle1` varchar(255) NOT NULL,
+  `riddle2` varchar(255) NOT NULL,
+  `riddle3` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
+  `score` int NOT NULL,
+  PRIMARY KEY (`game_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `riddle_answers`
+--
+
+DROP TABLE IF EXISTS `riddle_answers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `riddle_answers` (
+  `riddle_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `answer` varchar(255) NOT NULL,
+  PRIMARY KEY (`riddle_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `riddle_answers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `riddles`
 --
 
@@ -92,4 +128,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-16 17:19:47
+-- Dump completed on 2023-05-21 11:40:13

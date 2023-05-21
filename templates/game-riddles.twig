@@ -13,7 +13,9 @@
         </form>
     {% endif %}
 
+    {% if catImage %}
     <img src="{{ catImage }}" alt="cat" class="img-fluid mt-5 mb-5">
+    {% endif %}
 
     {% if formAction %}
         {% if correct %}

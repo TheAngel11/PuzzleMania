@@ -231,7 +231,7 @@ class RiddlesAPIController
 
                 // The riddle was not deleted successfully.
                 $responseBody = <<<body
-                {"message": "Riddle with id $entryId was not deleted successfully"}
+                {"message": "Riddle with id $entryId was not deleted successfully"}     
                 body;
                 $response->getBody()->write($responseBody);
                 return $response->withHeader('content-type', 'application/json')->withStatus(404);
